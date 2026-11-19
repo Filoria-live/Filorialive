@@ -1,1 +1,387 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050805">
+<title>Failoria Casino</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:#050805;
+ color:#eaffea;
+ font-family:Arial,sans-serif;
+ min-height:100vh;
+ padding:20px;
+}
+
+header{
+ max-width:650px;
+ margin:0 auto 25px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+
+.logo{
+ color:#39ff59;
+ font-weight:900;
+ letter-spacing:2px;
+}
+
+.back{
+ color:#8ebd8e;
+ text-decoration:none;
+ font-size:13px;
+}
+
+main{
+ max-width:650px;
+ margin:auto;
+}
+
+.title{
+ text-align:center;
+ color:#39ff59;
+ font-size:30px;
+ margin:30px 0 8px;
+}
+
+.subtitle{
+ text-align:center;
+ color:#82a882;
+ font-size:13px;
+}
+
+.balance{
+ background:#101b10;
+ border:1px solid #286b35;
+ border-radius:14px;
+ padding:18px;
+ text-align:center;
+ margin:25px 0;
+}
+
+.balance-label{
+ color:#82a882;
+ font-size:12px;
+}
+
+.balance-value{
+ color:#39ff59;
+ font-size:30px;
+ font-weight:bold;
+ margin-top:8px;
+}
+
+.machine{
+ background:linear-gradient(145deg,#17271a,#09100a);
+ border:2px solid #286b35;
+ border-radius:18px;
+ padding:12px;
+ box-shadow:0 0 30px #39ff5915;
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(5,minmax(0,1fr));
+ gap:6px;
+}
+
+.cell{
+ aspect-ratio:1;
+ background:#071008;
+ border:1px solid #25452b;
+ border-radius:9px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:clamp(23px,7vw,39px);
+}
+
+.cell.win{
+ border-color:#39ff59;
+ background:#193d20;
+ box-shadow:0 0 12px #39ff5970;
+}
+
+.controls{
+ margin-top:20px;
+ display:grid;
+ gap:12px;
+}
+
+.bet-row{
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ gap:14px;
+}
+
+.bet-row button{
+ width:42px;
+ height:42px;
+ background:#142516;
+ color:#39ff59;
+ border:1px solid #286b35;
+ border-radius:9px;
+ font-size:22px;
+}
+
+.bet-value{
+ font-weight:bold;
+ min-width:90px;
+ text-align:center;
+}
+
+.play{
+ width:100%;
+ padding:17px;
+ border:0;
+ border-radius:12px;
+ background:#39ff59;
+ color:#041006;
+ font-size:17px;
+ font-weight:900;
+ cursor:pointer;
+}
+
+.play:disabled{
+ opacity:.5;
+ cursor:default;
+}
+
+.message{
+ min-height:48px;
+ text-align:center;
+ margin-top:18px;
+ color:#a9d5ae;
+ font-weight:bold;
+}
+
+.info{
+ margin-top:30px;
+ padding:17px;
+ background:#0b140c;
+ border:1px solid #1d3821;
+ border-radius:12px;
+ color:#8ebd8e;
+ font-size:12px;
+ line-height:1.8;
+}
+
+footer{
+ text-align:center;
+ color:#526b56;
+ font-size:11px;
+ margin:30px 0 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">FAILORIA GAMES</div>
+ <a class="back" href="index.html">← Все игры</a>
+</header>
+
+<main>
+
+ <h1 class="title">🎰 CASINO</h1>
+ <p class="subtitle">Игровой автомат 5 × 3</p>
+
+ <section class="balance">
+  <div class="balance-label">ТВОЙ БАЛАНС</div>
+  <div class="balance-value" id="balance">1000</div>
+  <div class="balance-label">виртуальных очков</div>
+ </section>
+
+ <section class="machine">
+  <div class="grid" id="grid">
+   <!-- 15 ячеек создаются JavaScript -->
+  </div>
+ </section>
+
+ <section class="controls">
+
+  <div class="bet-row">
+   <button id="minus">−</button>
+   <div class="bet-value">
+    СТАВКА: <span id="bet">10</span>
+   </div>
+   <button id="plus">+</button>
+  </div>
+
+  <button class="play" id="play">
+   ИГРАТЬ
+  </button>
+
+ </section>
+
+ <div class="message" id="message">
+  Удачи в игре!
+ </div>
+
+ <section class="info">
+  **ПРАВИЛА**
+  <br>
+  • Три одинаковых символа по горизонтали — выигрыш.
+  <br>
+  • Три одинаковых символа по диагонали — выигрыш.
+  <br>
+  • За три семёрки — 1000 очков.
+  <br>
+  • За три алмаза — 300 очков.
+  <br>
+  • За три звезды — 150 очков.
+  <br>
+  • За три одинаковых остальных символа — 50 очков.
+  <br>
+  • Все очки виртуальные.
+ </section>
+
+</main>
+
+<footer>FAILORIA CASINO © 2026</footer>
+
+<script>
+const symbols=["🍒","💎","7️⃣","🍋","⭐","🔔"];
+
+let balance=1000;
+let bet=10;
+let spinning=false;
+
+const grid=document.getElementById("grid");
+const balanceEl=document.getElementById("balance");
+const betEl=document.getElementById("bet");
+const message=document.getElementById("message");
+const playButton=document.getElementById("play");
+
+let cells=[];
+
+for(let i=0;i<15;i++){
+ const cell=document.createElement("div");
+ cell.className="cell";
+ cell.textContent="❔";
+ grid.appendChild(cell);
+ cells.push(cell);
+}
+
+function update(){
+ balanceEl.textContent=balance;
+ betEl.textContent=bet;
+ document.getElementById("minus").disabled=spinning;
+ document.getElementById("plus").disabled=spinning;
+ playButton.disabled=spinning||balance<bet;
+}
+
+document.getElementById("minus").onclick=()=>{
+ if(bet>10){
+  bet-=10;
+  update();
+ }
+};
+
+document.getElementById("plus").onclick=()=>{
+ if(bet<100){
+  bet+=10;
+  update();
+ }
+};
+
+function payout(symbol){
+ if(symbol==="7️⃣")return 1000;
+ if(symbol==="💎")return 300;
+ if(symbol==="⭐")return 150;
+ return 50;
+}
+
+function spin(){
+ const result=Array.from(
+  {length:15},
+  ()=>symbols[Math.floor(Math.random()*symbols.length)]
+ );
+
+ result.forEach((symbol,i)=>{
+  cells[i].textContent=symbol;
+  cells[i].classList.remove("win");
+ });
+
+ return result;
+}
+
+function getWinningLines(result){
+ const lines=[];
+
+ // Горизонтали
+ for(let row=0;row<3;row++){
+  const start=row*5;
+  for(let col=0;col<=2;col++){
+   lines.push([start+col,start+col+1,start+col+2]);
+  }
+ }
+
+ // Диагонали
+ for(let row=0;row<=1;row++){
+  for(let col=0;col<=2;col++){
+   const start=row*5+col;
+   lines.push([start,start+6,start+12]);
+   lines.push([start+2,start+6,start+10]);
+  }
+ }
+
+ return lines.filter(line=>{
+  const [a,b,c]=line;
+  return result[a]===result[b]&&result[b]===result[c];
+ });
+}
+
+playButton.onclick=async()=>{
+ if(spinning||balance<bet)return;
+
+ spinning=true;
+ balance-=bet;
+ update();
+ message.textContent="Барабаны вращаются...";
+
+ const result=spin();
+
+ await new Promise(resolve=>setTimeout(resolve,1000));
+
+ const winningLines=getWinningLines(result);
+ let prize=0;
+ const winningCells=new Set();
+
+ winningLines.forEach(line=>{
+  const symbol=result[line[0]];
+  prize+=payout(symbol);
+  line.forEach(index=>winningCells.add(index));
+ });
+
+ winningCells.forEach(index=>{
+  cells[index].classList.add("win");
+ });
+
+ balance+=prize;
+
+ if(prize>0){
+  message.textContent="ПОБЕДА! +" + prize + " очков!";
+ }else{
+  message.textContent="В этот раз без выигрыша. Попробуй ещё!";
+ }
+
+ spinning=false;
+ update();
+};
+
+update();
+</script>
+
+</body>
+  </html>
+  
