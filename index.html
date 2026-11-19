@@ -8,126 +8,173 @@
 <title>Failoria Games</title>
 
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:#050805;
-  color:#eaffec;
-  font-family:Arial,sans-serif;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
-header{
-  padding:24px 18px;
-  border-bottom:1px solid #18351e;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+
+body {
+    background: #050805;
+    color: #eaffea;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
 }
-.logo{
-  color:#39ff59;
-  font-size:23px;
-  font-weight:900;
-  letter-spacing:2px;
+
+header {
+    padding: 25px 20px;
+    text-align: center;
+    border-bottom: 1px solid #17351c;
+    background: #080e09;
 }
-.status{
-  color:#70a879;
-  font-size:12px;
+
+.logo {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #65ff79;
+    text-shadow: 0 0 15px #1aff45;
 }
-main{
-  max-width:900px;
-  margin:auto;
-  padding:45px 18px;
+
+.subtitle {
+    color: #79977e;
+    margin-top: 8px;
+    font-size: 13px;
 }
-.hero{
-  text-align:center;
-  padding:55px 15px;
-  background:linear-gradient(145deg,#102316,#080d09);
-  border:1px solid #20452a;
-  border-radius:20px;
+
+main {
+    max-width: 1000px;
+    margin: auto;
+    padding: 25px 16px;
 }
-h1{
-  color:#42ff62;
-  font-size:38px;
-  margin:0 0 12px;
+
+.section-title {
+    font-size: 21px;
+    margin-bottom: 18px;
 }
-.hero p{color:#9db9a1}
-.section-title{
-  margin:35px 0 18px;
-  font-size:20px;
+
+.games {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
 }
-.games{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:15px;
+
+.game {
+    min-height: 155px;
+    border: 1px solid #24552c;
+    border-radius: 15px;
+    background: linear-gradient(145deg, #101d12, #080d09);
+    padding: 18px;
+    text-decoration: none;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: 0.2s;
 }
-.game{
-  min-height:170px;
-  background:#0c150e;
-  border:1px solid #1c3922;
-  border-radius:16px;
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
+
+.game:active {
+    transform: scale(0.97);
 }
-.game-icon{font-size:35px}
-.game h3{margin:12px 0 5px}
-.game p{color:#8ca992;font-size:13px}
-.soon{
-  color:#42ff62;
-  font-size:11px;
-  letter-spacing:1px;
+
+.game:hover {
+    border-color: #65ff79;
+    box-shadow: 0 0 18px #1aff4530;
 }
-footer{
-  text-align:center;
-  padding:30px;
-  color:#58715c;
-  font-size:12px;
+
+.game-icon {
+    font-size: 34px;
 }
-@media(max-width:450px){
-  h1{font-size:29px}
-  .games{grid-template-columns:1fr 1fr}
-  .game{min-height:155px;padding:14px}
+
+.game-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 12px;
+}
+
+.game-description {
+    font-size: 12px;
+    color: #91a995;
+    margin-top: 6px;
+}
+
+.play {
+    color: #65ff79;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.coming {
+    opacity: 0.65;
+}
+
+footer {
+    text-align: center;
+    color: #536957;
+    font-size: 12px;
+    padding: 35px 10px;
+}
+
+@media (min-width: 650px) {
+    .games {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 </style>
 </head>
 
 <body>
+
 <header>
-  <div class="logo">FAILORIA</div>
-  <div class="status">GAMES PLATFORM</div>
+    <div class="logo">FAILORIA GAMES</div>
+    <div class="subtitle">Игровая платформа Failoria</div>
 </header>
 
 <main>
-  <section class="hero">
-    <h1>FAILORIA GAMES</h1>
-    <p>Твоя игровая территория.</p>
-  </section>
+    <h2 class="section-title">Все игры</h2>
 
-  <h2 class="section-title">Все игры</h2>
+    <div class="games">
 
-  <section class="games">
-    <div class="game">
-      <div>
-        <div class="game-icon">🎰</div>
-        <h3>Casino</h3>
-        <p>Играй ради виртуальных очков</p>
-      </div>
-      <div class="soon">СКОРО</div>
+        <a class="game" href="casino.html">
+            <div>
+                <div class="game-icon">🎰</div>
+                <div class="game-name">Casino</div>
+                <div class="game-description">
+                    Игровой автомат с виртуальными очками
+                </div>
+            </div>
+            <div class="play">ИГРАТЬ →</div>
+        </a>
+
+        <div class="game coming">
+            <div>
+                <div class="game-icon">🧱</div>
+                <div class="game-name">Game 2</div>
+                <div class="game-description">
+                    Новая игра появится здесь
+                </div>
+            </div>
+            <div class="play">СКОРО</div>
+        </div>
+
+        <div class="game coming">
+            <div>
+                <div class="game-icon">🚀</div>
+                <div class="game-name">Game 3</div>
+                <div class="game-description">
+                    Новая игра появится здесь
+                </div>
+            </div>
+            <div class="play">СКОРО</div>
+        </div>
+
     </div>
-
-    <div class="game">
-      <div>
-        <div class="game-icon">🎮</div>
-        <h3>Game 2</h3>
-        <p>Новая игра</p>
-      </div>
-      <div class="soon">СКОРО</div>
-    </div>
-  </section>
 </main>
 
 <footer>
-  FAILORIA GAMES © 2026
+    FAILORIA © 2026
 </footer>
+
 </body>
 </html>
