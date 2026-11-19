@@ -8,118 +8,159 @@
 <title>Failoria Games</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+ background:#050805;
+ color:#eaffea;
+ font-family:Arial,sans-serif;
+ min-height:100vh;
+ overflow-x:hidden;
 }
 
-body {
-    background: #050805;
-    color: #eaffea;
-    font-family: Arial, sans-serif;
-    min-height: 100vh;
+body:before,body:after{
+ content:"";
+ position:fixed;
+ width:280px;height:280px;
+ border-radius:50%;
+ filter:blur(100px);
+ opacity:.12;
+ pointer-events:none;
+ z-index:-1;
+ animation:float 9s ease-in-out infinite alternate;
+}
+body:before{background:#39ff59;top:5%;left:-130px}
+body:after{background:#00aaff;bottom:0;right:-140px;animation-delay:2s}
+
+@keyframes float{
+ from{transform:translate(0,0)}
+ to{transform:translate(70px,50px)}
 }
 
-header {
-    padding: 25px 20px;
-    text-align: center;
-    border-bottom: 1px solid #17351c;
-    background: #080e09;
+header{
+ padding:28px 16px;
+ text-align:center;
+ border-bottom:1px solid #17351c;
+ background:#080e09dd;
+ backdrop-filter:blur(12px);
 }
 
-.logo {
-    font-size: 30px;
-    font-weight: 900;
-    letter-spacing: 3px;
-    color: #65ff79;
-    text-shadow: 0 0 15px #1aff45;
+.logo{
+ font-size:30px;
+ font-weight:900;
+ letter-spacing:3px;
+ color:#65ff79;
+ text-shadow:0 0 15px #1aff45;
+ animation:glow 2.5s infinite alternate;
 }
 
-.subtitle {
-    color: #79977e;
-    margin-top: 8px;
-    font-size: 13px;
+@keyframes glow{
+ from{text-shadow:0 0 8px #1aff45}
+ to{text-shadow:0 0 24px #1aff45,0 0 40px #1aff4555}
 }
 
-main {
-    max-width: 1000px;
-    margin: auto;
-    padding: 25px 16px;
+.subtitle{color:#79977e;margin-top:8px;font-size:13px}
+
+main{max-width:1000px;margin:auto;padding:25px 16px}
+
+.section-title{font-size:21px;margin-bottom:18px}
+
+.account{
+ background:#0b150d;
+ border:1px solid #24552c;
+ border-radius:14px;
+ padding:16px;
+ margin-bottom:25px;
+ animation:appear .6s ease both;
 }
 
-.section-title {
-    font-size: 21px;
-    margin-bottom: 18px;
+.account-title{color:#65ff79;font-weight:bold;margin-bottom:10px}
+.account-status{font-size:13px;color:#91a995;margin-bottom:12px}
+.account input{
+ width:100%;
+ padding:13px;
+ margin:5px 0;
+ border:1px solid #24552c;
+ border-radius:9px;
+ background:#071008;
+ color:white;
+ outline:none;
+}
+.account input:focus{border-color:#65ff79}
+
+.account button{
+ border:0;
+ border-radius:9px;
+ background:#39ff59;
+ color:#041006;
+ font-weight:bold;
+ padding:12px 16px;
+ cursor:pointer;
+ margin-top:8px;
+}
+.account button:disabled{opacity:.5}
+.account .logout{background:#263a29;color:#caffce}
+#authMessage{font-size:12px;color:#9fc5a3;margin-top:10px;min-height:15px}
+
+.games{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:14px;
 }
 
-.games {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+.game{
+ min-height:165px;
+ border:1px solid #24552c;
+ border-radius:15px;
+ background:linear-gradient(145deg,#101d12,#080d09);
+ padding:18px;
+ text-decoration:none;
+ color:white;
+ display:flex;
+ flex-direction:column;
+ justify-content:space-between;
+ transition:transform .25s,border-color .25s,box-shadow .25s;
+ animation:appear .65s ease both;
+}
+.game:nth-child(2){animation-delay:.12s}
+.game:nth-child(3){animation-delay:.24s}
+
+@keyframes appear{
+ from{opacity:0;transform:translateY(22px)}
+ to{opacity:1;transform:translateY(0)}
 }
 
-.game {
-    min-height: 155px;
-    border: 1px solid #24552c;
-    border-radius: 15px;
-    background: linear-gradient(145deg, #101d12, #080d09);
-    padding: 18px;
-    text-decoration: none;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: 0.2s;
+.game:active{transform:scale(.97)}
+.game:hover{
+ transform:translateY(-5px);
+ border-color:#65ff79;
+ box-shadow:0 0 22px #1aff4530;
 }
 
-.game:active {
-    transform: scale(0.97);
+.game-icon{
+ font-size:36px;
+ display:inline-block;
+ animation:bob 3s ease-in-out infinite;
+}
+@keyframes bob{
+ 0%,100%{transform:translateY(0)}
+ 50%{transform:translateY(-5px)}
 }
 
-.game:hover {
-    border-color: #65ff79;
-    box-shadow: 0 0 18px #1aff4530;
+.game-name{font-size:18px;font-weight:bold;margin-top:12px}
+.game-description{font-size:12px;color:#91a995;margin-top:6px}
+.play{color:#65ff79;font-size:12px;font-weight:bold;margin-top:15px}
+.coming{opacity:.55;cursor:default}
+
+footer{
+ text-align:center;
+ color:#536957;
+ font-size:12px;
+ padding:35px 10px;
 }
 
-.game-icon {
-    font-size: 34px;
-}
-
-.game-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 12px;
-}
-
-.game-description {
-    font-size: 12px;
-    color: #91a995;
-    margin-top: 6px;
-}
-
-.play {
-    color: #65ff79;
-    font-size: 12px;
-    font-weight: bold;
-    margin-top: 15px;
-}
-
-.coming {
-    opacity: 0.65;
-}
-
-footer {
-    text-align: center;
-    color: #536957;
-    font-size: 12px;
-    padding: 35px 10px;
-}
-
-@media (min-width: 650px) {
-    .games {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+@media(min-width:650px){
+ .games{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 </style>
 </head>
@@ -127,54 +168,140 @@ footer {
 <body>
 
 <header>
-    <div class="logo">FAILORIA GAMES</div>
-    <div class="subtitle">Игровая платформа Failoria</div>
+ <div class="logo">FAILORIA GAMES</div>
+ <div class="subtitle">Игровая платформа Failoria</div>
 </header>
 
 <main>
-    <h2 class="section-title">Все игры</h2>
 
-    <div class="games">
+ <section class="account">
+  <div class="account-title">АККАУНТ FAILORIA</div>
+  <div class="account-status" id="accountStatus">Проверяем авторизацию...</div>
 
-        <a class="game" href="casino.html">
-            <div>
-                <div class="game-icon">🎰</div>
-                <div class="game-name">Casino</div>
-                <div class="game-description">
-                    Игровой автомат с виртуальными очками
-                </div>
-            </div>
-            <div class="play">ИГРАТЬ →</div>
-        </a>
+  <div id="loginForm" hidden>
+   <input id="email" type="email" placeholder="Почта Failoria ID" autocomplete="email">
+   <input id="password" type="password" placeholder="Пароль" autocomplete="current-password">
+   <button id="loginButton">ВОЙТИ</button>
+  </div>
 
-        <div class="game coming">
-            <div>
-                <div class="game-icon">🧱</div>
-                <div class="game-name">Game 2</div>
-                <div class="game-description">
-                    Новая игра появится здесь
-                </div>
-            </div>
-            <div class="play">СКОРО</div>
-        </div>
+  <div id="userPanel" hidden>
+   <div class="account-status" id="userEmail"></div>
+   <button class="logout" id="logoutButton">ВЫЙТИ</button>
+  </div>
 
-        <div class="game coming">
-            <div>
-                <div class="game-icon">🚀</div>
-                <div class="game-name">Game 3</div>
-                <div class="game-description">
-                    Новая игра появится здесь
-                </div>
-            </div>
-            <div class="play">СКОРО</div>
-        </div>
+  <div id="authMessage"></div>
+ </section>
 
-    </div>
+ <h2 class="section-title">Все игры</h2>
+
+ <div class="games">
+
+  <a class="game" href="casino.html">
+   <div>
+    <div class="game-icon">🎰</div>
+    <div class="game-name">Casino</div>
+    <div class="game-description">Игровой автомат с виртуальными очками</div>
+   </div>
+   <div class="play">ИГРАТЬ →</div>
+  </a>
+
+  <div class="game coming">
+   <div>
+    <div class="game-icon">🧱</div>
+    <div class="game-name">Game 2</div>
+    <div class="game-description">Новая игра появится здесь</div>
+   </div>
+   <div class="play">СКОРО</div>
+  </div>
+
+  <div class="game coming">
+   <div>
+    <div class="game-icon">🚀</div>
+    <div class="game-name">Game 3</div>
+    <div class="game-description">Новая игра появится здесь</div>
+   </div>
+   <div class="play">СКОРО</div>
+  </div>
+
+ </div>
 </main>
 
-<footer>
-    FAILORIA © 2026
-</footer>
+<footer>FAILORIA © 2026</footer>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+ getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyBkvQ49TJLLTAzLdRXzFMLh_0za8-07cRY",
+ authDomain:"filoria-8cf9f.firebaseapp.com",
+ projectId:"filoria-8cf9f",
+ storageBucket:"filoria-8cf9f.firebasestorage.app",
+ messagingSenderId:"974748954017",
+ appId:"1:974748954017:web:626fe05cf5a7df5485afe0",
+ measurementId:"G-7N8D3GMNZM"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+
+const status=document.getElementById("accountStatus");
+const loginForm=document.getElementById("loginForm");
+const userPanel=document.getElementById("userPanel");
+const authMessage=document.getElementById("authMessage");
+const loginButton=document.getElementById("loginButton");
+
+onAuthStateChanged(auth,user=>{
+ if(user){
+  status.textContent="Вы вошли в Failoria.";
+  loginForm.hidden=true;
+  userPanel.hidden=false;
+  document.getElementById("userEmail").textContent=user.email||"Аккаунт авторизован";
+ }else{
+  status.textContent="Войди, чтобы сохранять игровой прогресс.";
+  loginForm.hidden=false;
+  userPanel.hidden=true;
+ }
+});
+
+loginButton.onclick=async()=>{
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+
+ if(!email||!password){
+  authMessage.textContent="Заполни почту и пароль.";
+  return;
+ }
+
+ loginButton.disabled=true;
+ authMessage.textContent="Выполняется вход...";
+
+ try{
+  await signInWithEmailAndPassword(auth,email,password);
+  authMessage.textContent="Вход выполнен!";
+ }catch(error){
+  const messages={
+   "auth/invalid-credential":"Неверная почта или пароль.",
+   "auth/invalid-email":"Неправильный формат почты.",
+   "auth/too-many-requests":"Слишком много попыток. Попробуй позже."
+  };
+  authMessage.textContent=messages[error.code]||"Ошибка входа: "+error.message;
+ }finally{
+  loginButton.disabled=false;
+ }
+};
+
+document.getElementById("logoutButton").onclick=async()=>{
+ try{
+  await signOut(auth);
+  authMessage.textContent="Ты вышел из аккаунта.";
+ }catch(error){
+  authMessage.textContent="Не удалось выйти: "+error.message;
+ }
+};
+</script>
 
 </body>
 </html>
