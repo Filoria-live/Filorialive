@@ -31,31 +31,61 @@ header{
  color:#39ff59;
  font-weight:900;
  letter-spacing:2px;
+ text-shadow:0 0 12px #39ff59;
 }
 
-.back{
- color:#8ebd8e;
- text-decoration:none;
- font-size:13px;
-}
+.back{color:#8ebd8e;text-decoration:none;font-size:13px}
 
-main{
- max-width:650px;
- margin:auto;
-}
+main{max-width:650px;margin:auto}
 
 .title{
  text-align:center;
  color:#39ff59;
  font-size:30px;
  margin:30px 0 8px;
+ animation:titleGlow 2s infinite alternate;
 }
 
-.subtitle{
- text-align:center;
- color:#82a882;
- font-size:13px;
+@keyframes titleGlow{
+ from{text-shadow:0 0 5px #39ff59}
+ to{text-shadow:0 0 22px #39ff59}
 }
+
+.subtitle{text-align:center;color:#82a882;font-size:13px}
+
+.account{
+ background:#0b150d;
+ border:1px solid #286b35;
+ border-radius:14px;
+ padding:16px;
+ margin:22px 0;
+}
+
+.account-title{color:#39ff59;font-weight:bold;margin-bottom:10px}
+.account-status{color:#91b994;font-size:12px;margin-bottom:10px}
+.account input{
+ width:100%;
+ padding:12px;
+ margin:5px 0;
+ border:1px solid #286b35;
+ border-radius:9px;
+ background:#071008;
+ color:white;
+ outline:none;
+}
+.account input:focus{border-color:#39ff59}
+.account button{
+ padding:12px 16px;
+ margin-top:8px;
+ border:0;
+ border-radius:9px;
+ background:#39ff59;
+ color:#041006;
+ font-weight:bold;
+}
+.account button:disabled{opacity:.5}
+.account .logout{background:#263a29;color:#caffce}
+#authMessage{color:#9fc5a3;font-size:12px;margin-top:10px;min-height:15px}
 
 .balance{
  background:#101b10;
@@ -64,19 +94,32 @@ main{
  padding:18px;
  text-align:center;
  margin:25px 0;
+ box-shadow:0 0 20px #39ff5910;
 }
 
-.balance-label{
- color:#82a882;
- font-size:12px;
-}
-
+.balance-label{color:#82a882;font-size:12px}
 .balance-value{
  color:#39ff59;
  font-size:30px;
  font-weight:bold;
  margin-top:8px;
+ text-shadow:0 0 12px #39ff5940;
 }
+
+.stats{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+ margin-top:15px;
+}
+.stat{
+ background:#091109;
+ border:1px solid #1c3921;
+ border-radius:9px;
+ padding:10px 4px;
+}
+.stat-value{color:#39ff59;font-weight:bold;font-size:17px}
+.stat-label{font-size:10px;color:#82a882;margin-top:5px}
 
 .machine{
  background:linear-gradient(145deg,#17271a,#09100a);
@@ -101,85 +144,62 @@ main{
  align-items:center;
  justify-content:center;
  font-size:clamp(23px,7vw,39px);
+ transition:background .2s,border-color .2s;
 }
 
 .cell.win{
  border-color:#39ff59;
  background:#193d20;
- box-shadow:0 0 12px #39ff5970;
+ box-shadow:0 0 15px #39ff5970;
+ animation:winPulse .6s infinite alternate;
 }
 
-.controls{
- margin-top:20px;
- display:grid;
- gap:12px;
+@keyframes winPulse{
+ from{transform:scale(1)}
+ to{transform:scale(1.06)}
 }
 
-.bet-row{
- display:flex;
- justify-content:center;
- align-items:center;
- gap:14px;
+.cell.spinning{
+ animation:shake .12s infinite alternate;
+}
+@keyframes shake{
+ from{transform:translateY(-2px)}
+ to{transform:translateY(2px)}
 }
 
+.controls{margin-top:20px;display:grid;gap:12px}
+.bet-row{display:flex;justify-content:center;align-items:center;gap:14px}
 .bet-row button{
- width:42px;
- height:42px;
- background:#142516;
- color:#39ff59;
- border:1px solid #286b35;
- border-radius:9px;
- font-size:22px;
+ width:42px;height:42px;
+ background:#142516;color:#39ff59;
+ border:1px solid #286b35;border-radius:9px;font-size:22px;
 }
-
-.bet-value{
- font-weight:bold;
- min-width:90px;
- text-align:center;
-}
+.bet-row button:disabled{opacity:.4}
+.bet-value{font-weight:bold;min-width:90px;text-align:center}
 
 .play{
- width:100%;
- padding:17px;
- border:0;
- border-radius:12px;
- background:#39ff59;
- color:#041006;
- font-size:17px;
- font-weight:900;
- cursor:pointer;
+ width:100%;padding:17px;border:0;border-radius:12px;
+ background:#39ff59;color:#041006;font-size:17px;
+ font-weight:900;cursor:pointer;transition:.2s;
 }
-
-.play:disabled{
- opacity:.5;
- cursor:default;
-}
+.play:active{transform:scale(.98)}
+.play:disabled{opacity:.5;cursor:default}
 
 .message{
- min-height:48px;
- text-align:center;
- margin-top:18px;
- color:#a9d5ae;
- font-weight:bold;
+ min-height:48px;text-align:center;margin-top:18px;
+ color:#a9d5ae;font-weight:bold;
 }
 
 .info{
- margin-top:30px;
- padding:17px;
- background:#0b140c;
- border:1px solid #1d3821;
- border-radius:12px;
- color:#8ebd8e;
- font-size:12px;
- line-height:1.8;
+ margin-top:30px;padding:17px;background:#0b140c;
+ border:1px solid #1d3821;border-radius:12px;
+ color:#8ebd8e;font-size:12px;line-height:1.8;
 }
+.info-title{color:#39ff59;font-weight:bold;margin-bottom:7px}
 
-footer{
- text-align:center;
- color:#526b56;
- font-size:11px;
- margin:30px 0 10px;
-}
+footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
+
+[hidden]{display:none!important}
 </style>
 </head>
 
@@ -195,72 +215,120 @@ footer{
  <h1 class="title">🎰 CASINO</h1>
  <p class="subtitle">Игровой автомат 5 × 3</p>
 
- <section class="balance">
-  <div class="balance-label">ТВОЙ БАЛАНС</div>
-  <div class="balance-value" id="balance">1000</div>
-  <div class="balance-label">виртуальных очков</div>
- </section>
+ <section class="account">
+  <div class="account-title">АККАУНТ FAILORIA</div>
+  <div class="account-status" id="accountStatus">Проверяем авторизацию...</div>
 
- <section class="machine">
-  <div class="grid" id="grid">
-   <!-- 15 ячеек создаются JavaScript -->
+  <div id="loginForm" hidden>
+   <input id="email" type="email" placeholder="Почта Failoria ID" autocomplete="email">
+   <input id="password" type="password" placeholder="Пароль" autocomplete="current-password">
+   <button id="loginButton">ВОЙТИ</button>
   </div>
+
+  <div id="userPanel" hidden>
+   <div class="account-status" id="userEmail"></div>
+   <button class="logout" id="logoutButton">ВЫЙТИ</button>
+  </div>
+
+  <div id="authMessage"></div>
  </section>
 
- <section class="controls">
+ <section id="gameArea" hidden>
 
-  <div class="bet-row">
-   <button id="minus">−</button>
-   <div class="bet-value">
-    СТАВКА: <span id="bet">10</span>
+  <section class="balance">
+   <div class="balance-label">ТВОЙ БАЛАНС</div>
+   <div class="balance-value" id="balance">1000</div>
+   <div class="balance-label">виртуальных очков</div>
+
+   <div class="stats">
+    <div class="stat">
+     <div class="stat-value" id="totalSpins">0</div>
+     <div class="stat-label">ИГР СЫГРАНО</div>
+    </div>
+    <div class="stat">
+     <div class="stat-value" id="totalWon">0</div>
+     <div class="stat-label">ВСЕГО ВЫИГРАНО</div>
+    </div>
+    <div class="stat">
+     <div class="stat-value" id="bestWin">0</div>
+     <div class="stat-label">РЕКОРД</div>
+    </div>
    </div>
-   <button id="plus">+</button>
-  </div>
+  </section>
 
-  <button class="play" id="play">
-   ИГРАТЬ
-  </button>
+  <section class="machine">
+   <div class="grid" id="grid"></div>
+  </section>
 
+  <section class="controls">
+   <div class="bet-row">
+    <button id="minus">−</button>
+    <div class="bet-value">СТАВКА: <span id="bet">10</span></div>
+    <button id="plus">+</button>
+   </div>
+   <button class="play" id="play">ИГРАТЬ</button>
+  </section>
+
+  <div class="message" id="message">Удачи в игре!</div>
  </section>
-
- <div class="message" id="message">
-  Удачи в игре!
- </div>
 
  <section class="info">
-  **ПРАВИЛА**
-  <br>
+  <div class="info-title">ПРАВИЛА</div>
   • Три одинаковых символа по горизонтали — выигрыш.
-  <br>
-  • Три одинаковых символа по диагонали — выигрыш.
-  <br>
-  • За три семёрки — 1000 очков.
-  <br>
-  • За три алмаза — 300 очков.
-  <br>
-  • За три звезды — 150 очков.
-  <br>
-  • За три одинаковых остальных символа — 50 очков.
-  <br>
-  • Все очки виртуальные.
+  <br>• Три одинаковых символа по диагонали — выигрыш.
+  <br>• За три семёрки — 1000 очков.
+  <br>• За три алмаза — 300 очков.
+  <br>• За три звезды — 150 очков.
+  <br>• За три одинаковых остальных символа — 50 очков.
+  <br>• Все очки виртуальные, реальные деньги не используются.
  </section>
 
 </main>
 
 <footer>FAILORIA CASINO © 2026</footer>
 
-<script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+ getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+ getFirestore,doc,getDoc,setDoc,serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyBkvQ49TJLLTAzLdRXzFMLh_0za8-07cRY",
+ authDomain:"filoria-8cf9f.firebaseapp.com",
+ projectId:"filoria-8cf9f",
+ storageBucket:"filoria-8cf9f.firebasestorage.app",
+ messagingSenderId:"974748954017",
+ appId:"1:974748954017:web:626fe05cf5a7df5485afe0",
+ measurementId:"G-7N8D3GMNZM"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
 const symbols=["🍒","💎","7️⃣","🍋","⭐","🔔"];
 
 let balance=1000;
 let bet=10;
 let spinning=false;
+let currentUser=null;
+let totalSpins=0;
+let totalWon=0;
+let bestWin=0;
+let progressRef=null;
 
 const grid=document.getElementById("grid");
 const balanceEl=document.getElementById("balance");
 const betEl=document.getElementById("bet");
 const message=document.getElementById("message");
 const playButton=document.getElementById("play");
+const gameArea=document.getElementById("gameArea");
+const authMessage=document.getElementById("authMessage");
+const loginButton=document.getElementById("loginButton");
 
 let cells=[];
 
@@ -273,22 +341,71 @@ for(let i=0;i<15;i++){
 }
 
 function update(){
- balanceEl.textContent=balance;
+ balanceEl.textContent=balance.toLocaleString("ru-RU");
  betEl.textContent=bet;
- document.getElementById("minus").disabled=spinning;
- document.getElementById("plus").disabled=spinning;
- playButton.disabled=spinning||balance<bet;
+ document.getElementById("totalSpins").textContent=totalSpins;
+ document.getElementById("totalWon").textContent=totalWon.toLocaleString("ru-RU");
+ document.getElementById("bestWin").textContent=bestWin.toLocaleString("ru-RU");
+
+ document.getElementById("minus").disabled=spinning||bet<=10;
+ document.getElementById("plus").disabled=spinning||bet>=100;
+ playButton.disabled=spinning||balance<bet||!currentUser;
+}
+
+async function loadProgress(user){
+ progressRef=doc(db,"gameProgress",user.uid,"games","casino");
+ message.textContent="Загружаем твой прогресс...";
+
+ try{
+  const snapshot=await getDoc(progressRef);
+
+  if(snapshot.exists()){
+   const data=snapshot.data();
+   balance=Number.isFinite(data.balance)?data.balance:1000;
+   totalSpins=Number.isFinite(data.totalSpins)?data.totalSpins:0;
+   totalWon=Number.isFinite(data.totalWon)?data.totalWon:0;
+   bestWin=Number.isFinite(data.bestWin)?data.bestWin:0;
+   bet=Number.isFinite(data.bet)?Math.min(100,Math.max(10,data.bet)):10;
+  }else{
+   balance=1000;
+   totalSpins=0;
+   totalWon=0;
+   bestWin=0;
+   bet=10;
+   await saveProgress();
+  }
+
+  update();
+  message.textContent="Прогресс загружен. Удачи в игре!";
+ }catch(error){
+  console.error(error);
+  message.textContent="Не удалось загрузить прогресс. Проверь правила Firestore.";
+  playButton.disabled=true;
+ }
+}
+
+async function saveProgress(){
+ if(!progressRef)throw new Error("Нет ссылки на игровой профиль");
+
+ await setDoc(progressRef,{
+  balance,
+  bet,
+  totalSpins,
+  totalWon,
+  bestWin,
+  updatedAt:serverTimestamp()
+ },{merge:true});
 }
 
 document.getElementById("minus").onclick=()=>{
- if(bet>10){
+ if(bet>10&&!spinning){
   bet-=10;
   update();
  }
 };
 
 document.getElementById("plus").onclick=()=>{
- if(bet<100){
+ if(bet<100&&!spinning){
   bet+=10;
   update();
  }
@@ -310,6 +427,7 @@ function spin(){
  result.forEach((symbol,i)=>{
   cells[i].textContent=symbol;
   cells[i].classList.remove("win");
+  cells[i].classList.add("spinning");
  });
 
  return result;
@@ -318,7 +436,6 @@ function spin(){
 function getWinningLines(result){
  const lines=[];
 
- // Горизонтали
  for(let row=0;row<3;row++){
   const start=row*5;
   for(let col=0;col<=2;col++){
@@ -326,7 +443,6 @@ function getWinningLines(result){
   }
  }
 
- // Диагонали
  for(let row=0;row<=1;row++){
   for(let col=0;col<=2;col++){
    const start=row*5+col;
@@ -342,7 +458,7 @@ function getWinningLines(result){
 }
 
 playButton.onclick=async()=>{
- if(spinning||balance<bet)return;
+ if(spinning||!currentUser||balance<bet)return;
 
  spinning=true;
  balance-=bet;
@@ -351,7 +467,9 @@ playButton.onclick=async()=>{
 
  const result=spin();
 
- await new Promise(resolve=>setTimeout(resolve,1000));
+ await new Promise(resolve=>setTimeout(resolve,1100));
+
+ cells.forEach(cell=>cell.classList.remove("spinning"));
 
  const winningLines=getWinningLines(result);
  let prize=0;
@@ -368,20 +486,91 @@ playButton.onclick=async()=>{
  });
 
  balance+=prize;
+ totalSpins++;
+ totalWon+=prize;
+ bestWin=Math.max(bestWin,prize);
 
  if(prize>0){
-  message.textContent="ПОБЕДА! +" + prize + " очков!";
+  message.textContent="ПОБЕДА! +" + prize + " виртуальных очков!";
  }else{
   message.textContent="В этот раз без выигрыша. Попробуй ещё!";
+ }
+
+ try{
+  await saveProgress();
+  message.textContent+= " Прогресс сохранён!";
+ }catch(error){
+  console.error(error);
+  message.textContent+=" Ошибка сохранения! Проверь интернет и правила Firestore.";
  }
 
  spinning=false;
  update();
 };
 
+onAuthStateChanged(auth,async user=>{
+ currentUser=user;
+
+ const status=document.getElementById("accountStatus");
+ const loginForm=document.getElementById("loginForm");
+ const userPanel=document.getElementById("userPanel");
+
+ if(user){
+  status.textContent="Ты вошёл в Failoria.";
+  loginForm.hidden=true;
+  userPanel.hidden=false;
+  document.getElementById("userEmail").textContent=user.email||"Аккаунт авторизован";
+  gameArea.hidden=false;
+  playButton.disabled=true;
+  await loadProgress(user);
+ }else{
+  status.textContent="Войди через свой аккаунт Failoria ID.";
+  loginForm.hidden=false;
+  userPanel.hidden=true;
+  gameArea.hidden=true;
+  progressRef=null;
+ }
+});
+
+loginButton.onclick=async()=>{
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+
+ if(!email||!password){
+  authMessage.textContent="Заполни почту и пароль.";
+  return;
+ }
+
+ loginButton.disabled=true;
+ authMessage.textContent="Выполняется вход...";
+
+ try{
+  await signInWithEmailAndPassword(auth,email,password);
+  authMessage.textContent="Вход выполнен!";
+ }catch(error){
+  const messages={
+   "auth/invalid-credential":"Неверная почта или пароль.",
+   "auth/invalid-email":"Неправильный формат почты.",
+   "auth/too-many-requests":"Слишком много попыток. Попробуй позже."
+  };
+  authMessage.textContent=messages[error.code]||"Ошибка входа: "+error.message;
+ }finally{
+  loginButton.disabled=false;
+ }
+};
+
+document.getElementById("logoutButton").onclick=async()=>{
+ try{
+  await signOut(auth);
+  authMessage.textContent="Ты вышел из аккаунта.";
+ }catch(error){
+  authMessage.textContent="Ошибка выхода: "+error.message;
+ }
+};
+
 update();
 </script>
 
 </body>
-  </html>
-  
+ </html>
+ 
