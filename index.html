@@ -1,1 +1,133 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050805">
+<title>Failoria Games</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#050805;
+  color:#eaffec;
+  font-family:Arial,sans-serif;
+}
+header{
+  padding:24px 18px;
+  border-bottom:1px solid #18351e;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo{
+  color:#39ff59;
+  font-size:23px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+.status{
+  color:#70a879;
+  font-size:12px;
+}
+main{
+  max-width:900px;
+  margin:auto;
+  padding:45px 18px;
+}
+.hero{
+  text-align:center;
+  padding:55px 15px;
+  background:linear-gradient(145deg,#102316,#080d09);
+  border:1px solid #20452a;
+  border-radius:20px;
+}
+h1{
+  color:#42ff62;
+  font-size:38px;
+  margin:0 0 12px;
+}
+.hero p{color:#9db9a1}
+.section-title{
+  margin:35px 0 18px;
+  font-size:20px;
+}
+.games{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+.game{
+  min-height:170px;
+  background:#0c150e;
+  border:1px solid #1c3922;
+  border-radius:16px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.game-icon{font-size:35px}
+.game h3{margin:12px 0 5px}
+.game p{color:#8ca992;font-size:13px}
+.soon{
+  color:#42ff62;
+  font-size:11px;
+  letter-spacing:1px;
+}
+footer{
+  text-align:center;
+  padding:30px;
+  color:#58715c;
+  font-size:12px;
+}
+@media(max-width:450px){
+  h1{font-size:29px}
+  .games{grid-template-columns:1fr 1fr}
+  .game{min-height:155px;padding:14px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">FAILORIA</div>
+  <div class="status">GAMES PLATFORM</div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>FAILORIA GAMES</h1>
+    <p>Твоя игровая территория.</p>
+  </section>
+
+  <h2 class="section-title">Все игры</h2>
+
+  <section class="games">
+    <div class="game">
+      <div>
+        <div class="game-icon">🎰</div>
+        <h3>Casino</h3>
+        <p>Играй ради виртуальных очков</p>
+      </div>
+      <div class="soon">СКОРО</div>
+    </div>
+
+    <div class="game">
+      <div>
+        <div class="game-icon">🎮</div>
+        <h3>Game 2</h3>
+        <p>Новая игра</p>
+      </div>
+      <div class="soon">СКОРО</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  FAILORIA GAMES © 2026
+</footer>
+</body>
+</html>
