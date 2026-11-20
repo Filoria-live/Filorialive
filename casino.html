@@ -35,6 +35,8 @@ button{cursor:pointer}
 .grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 .cell{aspect-ratio:1;background:#071008;border:1px solid #25452b;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:clamp(23px,7vw,39px)}
 .cell.win{border-color:#39ff59;background:#193d20;box-shadow:0 0 15px #39ff5970}
+.cell.spinning{animation:shake .12s infinite alternate}
+@keyframes shake{from{transform:translateY(-2px)}to{transform:translateY(2px)}}
 .controls{display:grid;gap:12px;margin-top:18px}
 .bet-panel{background:#0b150d;border:1px solid #286b35;border-radius:14px;padding:16px;text-align:center}
 .bet-label{color:#82a882;font-size:12px}
@@ -100,18 +102,9 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
   <div class="balance-label">виртуальных очков</div>
 
   <div class="stats">
-   <div class="stat">
-    <div class="stat-value" id="totalSpins">0</div>
-    <div class="stat-label">ИГР СЫГРАНО</div>
-   </div>
-   <div class="stat">
-    <div class="stat-value" id="totalWon">0</div>
-    <div class="stat-label">ВСЕГО НАЧИСЛЕНО</div>
-   </div>
-   <div class="stat">
-    <div class="stat-value" id="bestWin">0</div>
-    <div class="stat-label">РЕКОРД</div>
-   </div>
+   <div class="stat"><div class="stat-value" id="totalSpins">0</div><div class="stat-label">ИГР СЫГРАНО</div></div>
+   <div class="stat"><div class="stat-value" id="totalWon">0</div><div class="stat-label">ВСЕГО НАЧИСЛЕНО</div></div>
+   <div class="stat"><div class="stat-value" id="bestWin">0</div><div class="stat-label">РЕКОРД</div></div>
   </div>
  </section>
 
@@ -176,17 +169,10 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
- getAuth,
- signInWithEmailAndPassword,
- onAuthStateChanged,
- signOut
+ getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
 import {
- getFirestore,
- doc,
- getDoc,
- setDoc
+ getFirestore,doc,getDoc,setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -199,64 +185,70 @@ const firebaseConfig = {
  measurementId:"G-8N7D3GMNZM"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-const SUPER_GAME_REQUIRED = 110000;
-const BONUS_AMOUNT = 100;
-const BONUS_INTERVAL = 60000;
+const SUPER_GAME_REQUIRED=110000;
+const BONUS_AMOUNT=100;
+const BONUS_INTERVAL=60000;
 
-const $ = id => document.getElementById(id);
+/* Повышенная вероятность ценных символов */
+const symbols=[
+ "🍒","🍒",
+ "💎","💎","💎",
+ "7️⃣","7️⃣",
+ "🍋",
+ "⭐","⭐","⭐",
+ "🔔"
+];
 
-let user = null;
-let balance = 1000;
-let bet = 10;
-let totalSpins = 0;
-let totalWon = 0;
-let bestWin = 0;
-let lastBonusAt = 0;
-let spinning = false;
-let bonusInterval = null;
+const $=id=>document.getElementById(id);
 
-const symbols = ["🍒","💎","7️⃣","🍋","⭐","🔔"];
-
-let cells = [];
+let user=null;
+let balance=1000;
+let bet=10;
+let totalSpins=0;
+let totalWon=0;
+let bestWin=0;
+let lastBonusAt=0;
+let spinning=false;
+let cells=[];
 
 function getGameRef(){
  return doc(db,"gameProgress",user.uid,"games","casino");
 }
 
 function updateUI(){
- $("balance").textContent = balance.toLocaleString("ru-RU");
- $("betValue").textContent = bet.toLocaleString("ru-RU");
- $("totalSpins").textContent = totalSpins.toLocaleString("ru-RU");
- $("totalWon").textContent = totalWon.toLocaleString("ru-RU");
- $("bestWin").textContent = bestWin.toLocaleString("ru-RU");
+ $("balance").textContent=balance.toLocaleString("ru-RU");
+ $("betValue").textContent=bet.toLocaleString("ru-RU");
+ $("totalSpins").textContent=totalSpins.toLocaleString("ru-RU");
+ $("totalWon").textContent=totalWon.toLocaleString("ru-RU");
+ $("bestWin").textContent=bestWin.toLocaleString("ru-RU");
 
- $("superSection").hidden = balance < SUPER_GAME_REQUIRED;
- $("bonusButton").disabled = balance !== 0 ||
-  Date.now() - lastBonusAt < BONUS_INTERVAL;
+ $("superSection").hidden=balance<SUPER_GAME_REQUIRED;
+ $("bonusButton").disabled=balance!==0 ||
+  Date.now()-lastBonusAt<BONUS_INTERVAL;
 
  document.querySelectorAll("[data-bet]").forEach(button=>{
-  const value = Number(button.dataset.bet);
+  const value=Number(button.dataset.bet);
   button.classList.toggle("selected",value===bet);
-  button.disabled = value > balance || spinning;
+  button.disabled=value>balance||spinning;
  });
 
- $("playButton").disabled = spinning || balance < bet;
+ $("playButton").disabled=spinning||balance<bet;
  updateBonusTimer();
 }
 
 function createGrid(){
- const grid = $("grid");
- grid.innerHTML = "";
- cells = [];
+ const grid=$("grid");
+ grid.innerHTML="";
+ cells=[];
 
  for(let i=0;i<15;i++){
-  const cell = document.createElement("div");
-  cell.className = "cell";
-  cell.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+  const cell=document.createElement("div");
+  cell.className="cell";
+  cell.textContent=symbols[Math.floor(Math.random()*symbols.length)];
   grid.appendChild(cell);
   cells.push(cell);
  }
@@ -264,104 +256,98 @@ function createGrid(){
 
 async function saveGame(){
  if(!user)return;
-
  try{
   await setDoc(getGameRef(),{
-   balance,
-   bet,
-   totalSpins,
-   totalWon,
-   bestWin,
-   lastBonusAt,
+   balance,bet,totalSpins,totalWon,bestWin,lastBonusAt,
    updatedAt:Date.now()
   });
  }catch(error){
   console.error(error);
-  $("message").textContent = "Не удалось сохранить прогресс.";
+  $("message").textContent="Не удалось сохранить прогресс.";
  }
 }
 
 async function loadGame(){
  try{
-  const snapshot = await getDoc(getGameRef());
+  const snapshot=await getDoc(getGameRef());
 
   if(snapshot.exists()){
-   const data = snapshot.data();
-   balance = Number(data.balance ?? 1000);
-   bet = Number(data.bet ?? 10);
-   totalSpins = Number(data.totalSpins ?? 0);
-   totalWon = Number(data.totalWon ?? 0);
-   bestWin = Number(data.bestWin ?? 0);
-   lastBonusAt = Number(data.lastBonusAt ?? 0);
+   const data=snapshot.data();
+   balance=Number(data.balance??1000);
+   bet=Number(data.bet??10);
+   totalSpins=Number(data.totalSpins??0);
+   totalWon=Number(data.totalWon??0);
+   bestWin=Number(data.bestWin??0);
+   lastBonusAt=Number(data.lastBonusAt??0);
   }else{
-   balance = 1000;
-   bet = 10;
-   totalSpins = 0;
-   totalWon = 0;
-   bestWin = 0;
-   lastBonusAt = 0;
+   balance=1000;
+   bet=10;
+   totalSpins=0;
+   totalWon=0;
+   bestWin=0;
+   lastBonusAt=0;
    await saveGame();
   }
 
   if(![10,50,100,500,1000,5000,10000].includes(bet))bet=10;
+
   updateUI();
   createGrid();
  }catch(error){
   console.error(error);
-  $("message").textContent = "Ошибка загрузки прогресса.";
+  $("message").textContent="Ошибка загрузки прогресса.";
  }
 }
 
-$("loginButton").onclick = async()=>{
- const email = $("email").value.trim();
- const password = $("password").value;
+$("loginButton").onclick=async()=>{
+ const email=$("email").value.trim();
+ const password=$("password").value;
 
- if(!email || !password){
-  $("authMessage").textContent = "Заполни почту и пароль.";
+ if(!email||!password){
+  $("authMessage").textContent="Заполни почту и пароль.";
   return;
  }
 
- $("loginButton").disabled = true;
+ $("loginButton").disabled=true;
 
  try{
   await signInWithEmailAndPassword(auth,email,password);
-  $("authMessage").textContent = "";
+  $("authMessage").textContent="";
  }catch(error){
-  $("authMessage").textContent = "Неверная почта или пароль.";
+  $("authMessage").textContent="Неверная почта или пароль.";
  }finally{
-  $("loginButton").disabled = false;
+  $("loginButton").disabled=false;
  }
 };
 
-$("logoutButton").onclick = ()=>signOut(auth);
+$("logoutButton").onclick=()=>signOut(auth);
 
 onAuthStateChanged(auth,async currentUser=>{
- user = currentUser;
+ user=currentUser;
 
  if(user){
-  $("accountStatus").textContent = "Ты вошёл в Failoria ID";
-  $("loginForm").hidden = true;
-  $("userPanel").hidden = false;
-  $("userEmail").textContent = user.email;
-  $("gameArea").hidden = false;
-
+  $("accountStatus").textContent="Ты вошёл в Failoria ID";
+  $("loginForm").hidden=true;
+  $("userPanel").hidden=false;
+  $("userEmail").textContent=user.email;
+  $("gameArea").hidden=false;
   await loadGame();
  }else{
-  $("accountStatus").textContent = "Войди в свой аккаунт";
-  $("loginForm").hidden = false;
-  $("userPanel").hidden = true;
-  $("gameArea").hidden = true;
+  $("accountStatus").textContent="Войди в свой аккаунт";
+  $("loginForm").hidden=false;
+  $("userPanel").hidden=true;
+  $("gameArea").hidden=true;
  }
 });
 
 $("betButtons").addEventListener("click",event=>{
- const button = event.target.closest("[data-bet]");
- if(!button || spinning)return;
+ const button=event.target.closest("[data-bet]");
+ if(!button||spinning)return;
 
- const value = Number(button.dataset.bet);
- if(value > balance)return;
+ const value=Number(button.dataset.bet);
+ if(value>balance)return;
 
- bet = value;
+ bet=value;
  updateUI();
  saveGame();
 });
@@ -377,20 +363,19 @@ function getWinningLines(){
 }
 
 function calculateWin(){
- let win = 0;
- const winningCells = new Set();
+ let win=0;
+ const winningCells=new Set();
 
  for(const line of getWinningLines()){
-  const first = cells[line[0]].textContent;
+  const first=cells[line[0]].textContent;
 
   if(line.every(index=>cells[index].textContent===first)){
-   let multiplier = 5;
-
+   let multiplier=5;
    if(first==="7️⃣")multiplier=100;
    else if(first==="💎")multiplier=30;
    else if(first==="⭐")multiplier=15;
 
-   win += bet * multiplier;
+   win+=bet*multiplier;
    line.forEach(index=>winningCells.add(index));
   }
  }
@@ -399,15 +384,15 @@ function calculateWin(){
 }
 
 async function play(){
- if(spinning || balance < bet)return;
+ if(spinning||balance<bet)return;
 
- spinning = true;
- balance -= bet;
+ spinning=true;
+ balance-=bet;
  totalSpins++;
  updateUI();
 
- $("message").textContent = "Крутим...";
- $("playButton").disabled = true;
+ $("message").textContent="Крутим...";
+ $("playButton").disabled=true;
 
  cells.forEach(cell=>cell.classList.remove("win","spinning"));
  cells.forEach(cell=>cell.classList.add("spinning"));
@@ -416,73 +401,75 @@ async function play(){
 
  cells.forEach(cell=>{
   cell.classList.remove("spinning");
-  cell.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+  cell.textContent=symbols[Math.floor(Math.random()*symbols.length)];
  });
 
- const result = calculateWin();
+ const result=calculateWin();
 
- if(result.win > 0){
-  balance += result.win;
-  totalWon += result.win;
-  bestWin = Math.max(bestWin,result.win);
+ if(result.win>0){
+  balance+=result.win;
+  totalWon+=result.win;
+  bestWin=Math.max(bestWin,result.win);
 
   result.winningCells.forEach(index=>{
    cells[index].classList.add("win");
   });
 
-  $("message").textContent =
-   "🎉 ПОБЕДА! Начислено " + result.win.toLocaleString("ru-RU") + " очков!";
+  $("message").textContent=
+   "🎉 ПОБЕДА! Начислено "+
+   result.win.toLocaleString("ru-RU")+" очков!";
  }else{
-  $("message").textContent = "В этот раз без совпадений. Попробуй ещё!";
+  $("message").textContent="В этот раз без совпадений. Попробуй ещё!";
  }
 
- spinning = false;
+ spinning=false;
  updateUI();
  await saveGame();
 }
 
-$("playButton").onclick = play;
+$("playButton").onclick=play;
 
-$("superButton").onclick = ()=>{
- if(balance < SUPER_GAME_REQUIRED)return;
+$("superButton").onclick=()=>{
+ if(balance<SUPER_GAME_REQUIRED)return;
 
- $("superResult").textContent =
+ $("superResult").textContent=
   "Поздравляем! Ты открыл суперигру Failoria!";
- $("superButton").textContent = "СУПЕРИГРА ОТКРЫТА";
- $("superButton").disabled = true;
+ $("superButton").textContent="СУПЕРИГРА ОТКРЫТА";
+ $("superButton").disabled=true;
 };
 
 function updateBonusTimer(){
  if(!user)return;
 
- const remaining = Math.max(0,BONUS_INTERVAL-(Date.now()-lastBonusAt));
+ const remaining=Math.max(
+  0,BONUS_INTERVAL-(Date.now()-lastBonusAt)
+ );
 
- if(balance !== 0){
-  $("bonusTimer").textContent = "Бонус доступен при нулевом балансе";
- }else if(remaining > 0){
-  $("bonusTimer").textContent =
-   "Следующий бонус через " + Math.ceil(remaining/1000) + " сек.";
+ if(balance!==0){
+  $("bonusTimer").textContent="Бонус доступен при нулевом балансе";
+ }else if(remaining>0){
+  $("bonusTimer").textContent=
+   "Следующий бонус через "+Math.ceil(remaining/1000)+" сек.";
  }else{
-  $("bonusTimer").textContent = "Бонус уже доступен!";
+  $("bonusTimer").textContent="Бонус уже доступен!";
  }
 
- $("bonusButton").disabled = balance !== 0 || remaining > 0;
+ $("bonusButton").disabled=balance!==0||remaining>0;
 }
 
-$("bonusButton").onclick = async()=>{
- if(!user || balance !== 0)return;
- if(Date.now()-lastBonusAt < BONUS_INTERVAL)return;
+$("bonusButton").onclick=async()=>{
+ if(!user||balance!==0)return;
+ if(Date.now()-lastBonusAt<BONUS_INTERVAL)return;
 
- balance += BONUS_AMOUNT;
- lastBonusAt = Date.now();
+ balance+=BONUS_AMOUNT;
+ lastBonusAt=Date.now();
 
- $("message").textContent = "🎁 Получено 100 бесплатных очков!";
+ $("message").textContent="🎁 Получено 100 бесплатных очков!";
  updateUI();
  await saveGame();
 };
 
-bonusInterval = setInterval(updateBonusTimer,1000);
-
+setInterval(updateBonusTimer,1000);
 createGrid();
 </script>
 </body>
