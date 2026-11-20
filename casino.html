@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -190,8 +189,7 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 <footer>FAILORIA GAMES © 2026</footer>
 </main>
 
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+<script type="module">import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
  initializeAuth,
@@ -375,9 +373,7 @@ function showAuthError(title,error){
   error?(error.code||error.message||String(error)):"";
  $("retryButton").hidden=false;
  console.error(title,error||"");
-}
-
-async function initializeFirebase(){
+}async function initializeFirebase(){
  $("accountStatus").textContent="Подключаем Firebase...";
  $("authMessage").textContent="";
  $("retryButton").hidden=true;
@@ -562,9 +558,7 @@ async function spinMachine(){
  });
 
  return calculateWin();
-}
-
-/* ОБЫЧНАЯ ИГРА */
+}/* ОБЫЧНАЯ ИГРА */
 
 async function play(){
  if(spinning||superActive||balance<bet)return;
@@ -696,7 +690,6 @@ async function superSpin(){
   if(!superActive)return;
 
   const multipliedWin=result.win*SUPER_MULTIPLIER;
-
   superTotal+=multipliedWin;
 
   if(result.win>0){
@@ -735,32 +728,8 @@ async function superSpin(){
 
  }catch(error){
   superBusy=false;
-
   $("superResult").textContent=
    "Ошибка суперигры: "+error.message;
-
-  await finishSuperGame
-  (true);
-   return;
-  }
-
-  superRoundNumber++;
-
-  $("superRound").textContent=
-   "РАУНД "+superRoundNumber+" ИЗ 5";
-
-  $("superAction").disabled=false;
-  $("superAction").textContent=
-   "🎰 КРУТИТЬ РАУНД "+superRoundNumber;
-
-  startRoundTimer();
-
- }catch(error){
-  superBusy=false;
-
-  $("superResult").textContent=
-   "Ошибка суперигры: "+error.message;
-
   await finishSuperGame(false);
  }
 }
@@ -808,8 +777,7 @@ async function finishSuperGame(success){
 
 $("superStart").onclick=startSuperGame;
 $("superAction").onclick=superSpin;
-
-/* БОНУС +100 */
+ /* БОНУС +100 */
 
 function updateBonusTimer(){
  if(!user)return;
