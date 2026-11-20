@@ -62,6 +62,16 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .super-fill{height:100%;width:100%;background:#b48aff}
 .super-action{margin-top:12px}
 .super-total{text-align:center;color:#fff;font-weight:bold;margin:12px 0;font-size:18px}
+.ultra{border:1px solid #ffbd59;background:linear-gradient(145deg,#33200d,#120d07);border-radius:14px;padding:16px;margin:20px 0}
+.ultra h2{color:#ffd18a;text-align:center}
+.ultra p{color:#e3c69c;font-size:13px;text-align:center;line-height:1.6}
+.ultra button{width:100%;padding:15px;border:0;border-radius:10px;background:#ffbd59;color:#211300;font-weight:900}
+.ultra-result{text-align:center;color:#ffdfa8;margin-top:12px;font-weight:bold;line-height:1.6}
+.luck-panel{background:#0b150d;border:1px solid #8cbd48;border-radius:14px;padding:14px;margin:16px 0;text-align:center}
+.luck-title{color:#c5ed79;font-weight:bold}
+.luck-value{color:#c5ed79;font-size:25px;font-weight:900;margin:8px}
+.luck-bar{height:9px;background:#26351a;border-radius:10px;overflow:hidden;margin-top:10px}
+.luck-fill{height:100%;width:0%;background:#a9e34b;transition:width .25s}
 .bonus{text-align:center;border-color:#39ff59;background:linear-gradient(145deg,#102514,#091109)}
 .bonus h2{color:#39ff59;font-size:22px;margin:5px}
 .bonus p{color:#a9cbaa;font-size:13px;line-height:1.6}
@@ -148,6 +158,13 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
  <div class="message" id="message">Удачи!</div>
 
+ <section class="luck-panel">
+  <div class="luck-title">🍀 МЕХАНИКА УДАЧИ</div>
+  <div class="luck-value" id="luckValue">0%</div>
+  <div class="luck-bar"><div class="luck-fill" id="luckFill"></div></div>
+  <div class="account-status">После проигрыша удача растёт, после выигрыша снижается. Она повышает шанс совпадений, но не гарантирует победу.</div>
+ </section>
+
  <section class="rewards">
   <div class="rewards-title">ТАБЛИЦА НАГРАД</div>
   <div class="reward-row"><span>7️⃣ 7️⃣ 7️⃣ — три семёрки</span><strong>×100</strong></div>
@@ -170,6 +187,20 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
   <div class="super-result" id="superResult"></div>
  </section>
 
+ <section class="ultra" id="ultraSection" hidden>
+  <h2>🔥 ULTRA GAME 🔥</h2>
+  <p>Вход стоит 100 000 000 очков. Пять раундов по 10 секунд. Каждый выигрыш умножается на 1000. Используется тот же автомат 5 × 3.</p>
+
+  <div class="super-round" id="ultraRound">Готов к ультраиспытанию?</div>
+  <div class="super-timer" id="ultraTimer">10</div>
+  <div class="super-bar"><div class="super-fill" id="ultraFill" style="background:#ffbd59"></div></div>
+  <div class="super-total" id="ultraTotal">Накоплено: 0</div>
+
+  <button id="ultraStart">НАЧАТЬ ULTRA GAME — 100 000 000</button>
+  <button id="ultraAction" class="super-action" hidden>🔥 КРУТИТЬ УЛЬТРАСЛОТ</button>
+  <div class="ultra-result" id="ultraResult"></div>
+ </section>
+
  <section class="info">
   <div class="info-title">ПРАВИЛА</div>
   Это игра на виртуальные очки. Реальные деньги не используются.
@@ -189,7 +220,8 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 <footer>FAILORIA GAMES © 2026</footer>
 </main>
 
-<script type="module">import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
  initializeAuth,
@@ -231,6 +263,12 @@ const SUPER_COST=100000;
 const SUPER_ROUNDS=5;
 const SUPER_TIME=10;
 const SUPER_MULTIPLIER=5;
+
+const ULTRA_COST=100000000;
+const ULTRA_ROUNDS=5;
+const ULTRA_TIME=10;
+const ULTRA_MULTIPLIER=1000;
+
 const BONUS_AMOUNT=100;
 const BONUS_INTERVAL=60000;
 
@@ -245,6 +283,7 @@ let totalSpins=0;
 let totalWon=0;
 let bestWin=0;
 let lastBonusAt=0;
+let luck=0;
 
 let spinning=false;
 let cells=[];
@@ -255,6 +294,17 @@ let superDeadline=0;
 let superTimerInterval=null;
 let superTotal=0;
 let superBusy=false;
+
+let ultraActive=false;
+let ultraRoundNumber=0;
+let ultraDeadline=0;
+let ultraTimerInterval=null;
+let ultraTotal=0;
+let ultraBusy=false;
+
+function specialGameActive(){
+ return superActive||ultraActive;
+}
 
 /* СОЗДАНИЕ ИГРОВОГО ПОЛЯ */
 
@@ -285,20 +335,24 @@ function updateUI(){
  $("totalWon").textContent=totalWon.toLocaleString("ru-RU");
  $("bestWin").textContent=bestWin.toLocaleString("ru-RU");
 
+ $("luckValue").textContent=luck+"%";
+ $("luckFill").style.width=luck+"%";
+
  $("superSection").hidden=balance<SUPER_COST&&!superActive;
+ $("ultraSection").hidden=balance<ULTRA_COST&&!ultraActive;
 
  document.querySelectorAll("[data-bet]").forEach(button=>{
   const value=Number(button.dataset.bet);
   button.classList.toggle("selected",value===bet);
-  button.disabled=value>balance||spinning||superActive;
+  button.disabled=value>balance||spinning||specialGameActive();
  });
 
- $("playButton").disabled=spinning||balance<bet||superActive;
+ $("playButton").disabled=spinning||balance<bet||specialGameActive();
 
  $("bonusButton").disabled=
   balance!==0||
   Date.now()-lastBonusAt<BONUS_INTERVAL||
-  superActive;
+  specialGameActive();
 
  updateBonusTimer();
 }
@@ -314,6 +368,7 @@ async function saveGame(){
    totalWon,
    bestWin,
    lastBonusAt,
+   luck,
    updatedAt:Date.now()
   });
  }catch(error){
@@ -338,6 +393,7 @@ async function loadGame(){
    totalWon=Number(data.totalWon??0);
    bestWin=Number(data.bestWin??0);
    lastBonusAt=Number(data.lastBonusAt??0);
+   luck=Math.max(0,Math.min(100,Number(data.luck??0)));
   }else{
    balance=1000;
    bet=10;
@@ -345,6 +401,7 @@ async function loadGame(){
    totalWon=0;
    bestWin=0;
    lastBonusAt=0;
+   luck=0;
 
    await saveGame();
   }
@@ -373,7 +430,9 @@ function showAuthError(title,error){
   error?(error.code||error.message||String(error)):"";
  $("retryButton").hidden=false;
  console.error(title,error||"");
-}async function initializeFirebase(){
+}
+
+async function initializeFirebase(){
  $("accountStatus").textContent="Подключаем Firebase...";
  $("authMessage").textContent="";
  $("retryButton").hidden=true;
@@ -427,7 +486,9 @@ function showAuthError(title,error){
 
    }else{
     stopSuperTimer();
+    stopUltraTimer();
     superActive=false;
+    ultraActive=false;
 
     $("accountStatus").textContent="Войди в свой аккаунт";
     $("loginForm").hidden=false;
@@ -494,7 +555,7 @@ $("logoutButton").onclick=async()=>{
 $("betButtons").addEventListener("click",event=>{
  const button=event.target.closest("[data-bet]");
 
- if(!button||spinning||superActive)return;
+ if(!button||spinning||specialGameActive())return;
 
  const value=Number(button.dataset.bet);
 
@@ -550,18 +611,28 @@ async function spinMachine(){
 
  await new Promise(resolve=>setTimeout(resolve,1000));
 
- cells.forEach(cell=>{
+ cells.forEach((cell,index)=>{
   cell.classList.remove("spinning");
-  cell.textContent=symbols[
-   Math.floor(Math.random()*symbols.length)
-  ];
+
+  const column=index%5;
+  const copyChance=luck/400;
+
+  if(column>0&&Math.random()<copyChance){
+   cell.textContent=cells[index-1].textContent;
+  }else{
+   cell.textContent=symbols[
+    Math.floor(Math.random()*symbols.length)
+   ];
+  }
  });
 
  return calculateWin();
-}/* ОБЫЧНАЯ ИГРА */
+}
+
+/* ОБЫЧНАЯ ИГРА */
 
 async function play(){
- if(spinning||superActive||balance<bet)return;
+ if(spinning||specialGameActive()||balance<bet)return;
 
  spinning=true;
  balance-=bet;
@@ -574,6 +645,8 @@ async function play(){
   const result=await spinMachine();
 
   if(result.win>0){
+   luck=Math.max(0,luck-12);
+
    balance+=result.win;
    totalWon+=result.win;
    bestWin=Math.max(bestWin,result.win);
@@ -587,21 +660,23 @@ async function play(){
     result.win.toLocaleString("ru-RU")+" очков!";
 
   }else{
-   $("message").textContent=
-    "В этот раз без совпадений. Попробуй ещё!";
+   luck=Math.min(100,luck+8);
+
+     luck=Math.min(100,luck+8);
+
+    $("message").textContent=
+     "В этот раз без совпадений. Удача выросла до "+luck+"%.";
+   }
+
+  }catch(error){
+   $("message").textContent="Ошибка игры: "+error.message;
+
+  }finally{
+   spinning=false;
+   updateUI();
+   await saveGame();
   }
-
- }catch(error){
-  $("message").textContent="Ошибка игры: "+error.message;
-
- }finally{
-  spinning=false;
-  updateUI();
-  await saveGame();
- }
 }
-
-$("playButton").onclick=play;
 
 /* СУПЕРИГРА */
 
@@ -637,7 +712,7 @@ function startRoundTimer(){
 }
 
 async function startSuperGame(){
- if(superActive||balance<SUPER_COST||!user)return;
+ if(specialGameActive()||balance<SUPER_COST||!user)return;
 
  const confirmed=confirm(
   "Начать суперигру за 100 000 очков? "+
@@ -689,6 +764,12 @@ async function superSpin(){
 
   if(!superActive)return;
 
+  if(result.win>0){
+   luck=Math.max(0,luck-12);
+  }else{
+   luck=Math.min(100,luck+8);
+  }
+
   const multipliedWin=result.win*SUPER_MULTIPLIER;
   superTotal+=multipliedWin;
 
@@ -724,12 +805,15 @@ async function superSpin(){
   $("superAction").textContent=
    "🎰 КРУТИТЬ РАУНД "+superRoundNumber;
 
+  updateUI();
   startRoundTimer();
 
  }catch(error){
   superBusy=false;
+
   $("superResult").textContent=
    "Ошибка суперигры: "+error.message;
+
   await finishSuperGame(false);
  }
 }
@@ -777,7 +861,194 @@ async function finishSuperGame(success){
 
 $("superStart").onclick=startSuperGame;
 $("superAction").onclick=superSpin;
- /* БОНУС +100 */
+
+
+/* УЛЬТРАИГРА */
+
+function stopUltraTimer(){
+ if(ultraTimerInterval){
+  clearInterval(ultraTimerInterval);
+  ultraTimerInterval=null;
+ }
+}
+
+function updateUltraTimer(){
+ if(!ultraActive)return;
+
+ const remaining=Math.max(0,ultraDeadline-Date.now());
+
+ $("ultraTimer").textContent=Math.ceil(remaining/1000);
+
+ $("ultraFill").style.width=
+  (remaining/(ULTRA_TIME*1000)*100)+"%";
+
+ if(remaining<=0){
+  finishUltraGame(false);
+ }
+}
+
+function startUltraRoundTimer(){
+ ultraDeadline=Date.now()+ULTRA_TIME*1000;
+
+ stopUltraTimer();
+ updateUltraTimer();
+
+ ultraTimerInterval=setInterval(updateUltraTimer,100);
+}
+
+async function startUltraGame(){
+ if(specialGameActive()||balance<ULTRA_COST||!user)return;
+
+ const confirmed=confirm(
+  "Начать ULTRA GAME за 100 000 000 очков? "+
+  "Пять раундов по 10 секунд. При проигрыше входные очки не возвращаются."
+ );
+
+ if(!confirmed)return;
+
+ ultraActive=true;
+ ultraRoundNumber=1;
+ ultraTotal=0;
+ ultraBusy=false;
+
+ balance-=ULTRA_COST;
+
+ $("ultraResult").textContent="";
+ $("ultraStart").hidden=true;
+ $("ultraAction").hidden=false;
+ $("ultraAction").disabled=false;
+
+ $("ultraRound").textContent="РАУНД 1 ИЗ 5";
+ $("ultraTotal").textContent="Накоплено: 0";
+ $("ultraAction").textContent="🔥 КРУТИТЬ УЛЬТРАСЛОТ";
+
+ updateUI();
+ await saveGame();
+
+ startUltraRoundTimer();
+}
+
+async function ultraSpin(){
+ if(!ultraActive||ultraBusy)return;
+
+ if(Date.now()>=ultraDeadline){
+  await finishUltraGame(false);
+  return;
+ }
+
+ ultraBusy=true;
+ stopUltraTimer();
+
+ $("ultraAction").disabled=true;
+ $("ultraRound").textContent=
+  "РАУНД "+ultraRoundNumber+" ИЗ 5 — ВРАЩЕНИЕ!";
+ $("ultraTimer").textContent="🔥";
+
+ try{
+  const result=await spinMachine();
+
+  if(!ultraActive)return;
+
+  if(result.win>0){
+   luck=Math.max(0,luck-12);
+  }else{
+   luck=Math.min(100,luck+8);
+  }
+
+  const multipliedWin=result.win*ULTRA_MULTIPLIER;
+  ultraTotal+=multipliedWin;
+
+  if(result.win>0){
+   result.winningCells.forEach(index=>{
+    cells[index].classList.add("win");
+   });
+  }
+
+  $("ultraTotal").textContent=
+   "Накоплено: "+ultraTotal.toLocaleString("ru-RU");
+
+  $("ultraResult").textContent=result.win>0
+   ? "Выигрыш раунда: "+
+     result.win.toLocaleString("ru-RU")+
+     " × 1000 = "+
+     multipliedWin.toLocaleString("ru-RU")
+   : "В этом раунде нет совпадений. Выигрыш: 0";
+
+  ultraBusy=false;
+
+  if(ultraRoundNumber>=ULTRA_ROUNDS){
+   await finishUltraGame(true);
+   return;
+  }
+
+  ultraRoundNumber++;
+
+  $("ultraRound").textContent=
+   "РАУНД "+ultraRoundNumber+" ИЗ 5";
+
+  $("ultraAction").disabled=false;
+  $("ultraAction").textContent=
+   "🔥 КРУТИТЬ РАУНД "+ultraRoundNumber;
+
+  updateUI();
+  startUltraRoundTimer();
+
+ }catch(error){
+  ultraBusy=false;
+
+  $("ultraResult").textContent=
+   "Ошибка ультраигры: "+error.message;
+
+  await finishUltraGame(false);
+ }
+}
+
+async function finishUltraGame(success){
+ if(!ultraActive)return;
+
+ stopUltraTimer();
+ ultraActive=false;
+ ultraBusy=false;
+
+ $("ultraAction").hidden=true;
+ $("ultraStart").hidden=false;
+ $("ultraStart").disabled=false;
+
+ if(success){
+  balance+=ultraTotal;
+  totalWon+=ultraTotal;
+  bestWin=Math.max(bestWin,ultraTotal);
+
+  $("ultraRound").textContent="🏆 ВСЕ 5 РАУНДОВ ПРОЙДЕНЫ!";
+  $("ultraTimer").textContent="🏆";
+  $("ultraFill").style.width="100%";
+
+  $("ultraResult").textContent=
+   "ULTRA ПОБЕДА! На баланс начислено "+
+   ultraTotal.toLocaleString("ru-RU")+" очков!";
+
+ }else{
+  $("ultraRound").textContent="УЛЬТРАИГРА ЗАВЕРШЕНА";
+  $("ultraTimer").textContent="0";
+  $("ultraFill").style.width="0%";
+
+  $("ultraResult").textContent=
+   "Время вышло! Накопленный выигрыш сгорел. "+
+   "Входные 100 000 000 очков не возвращаются.";
+ }
+
+ $("ultraTotal").textContent=
+  "Итог ультраигры: "+ultraTotal.toLocaleString("ru-RU");
+
+ updateUI();
+ await saveGame();
+}
+
+$("ultraStart").onclick=startUltraGame;
+$("ultraAction").onclick=ultraSpin;
+
+
+/* БОНУС +100 */
 
 function updateBonusTimer(){
  if(!user)return;
@@ -799,11 +1070,12 @@ function updateBonusTimer(){
  }
 
  $("bonusButton").disabled=
-  balance!==0||remaining>0||superActive;
+  balance!==0||remaining>0||specialGameActive();
 }
 
 $("bonusButton").onclick=async()=>{
- if(!user||balance!==0||superActive)return;
+ if(!user||balance!==0||specialGameActive())return;
+
  if(Date.now()-lastBonusAt<BONUS_INTERVAL)return;
 
  balance+=BONUS_AMOUNT;
@@ -815,6 +1087,7 @@ $("bonusButton").onclick=async()=>{
  updateUI();
  await saveGame();
 };
+
 
 /* ЗАПУСК */
 
