@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#050805">
 <title>Failoria Casino</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:18px;background:#050805;color:#eaffea;font-family:Arial,sans-serif}
@@ -23,8 +24,8 @@ button{cursor:pointer}
 button:disabled{opacity:.4;cursor:not-allowed}
 .account button{padding:12px 16px;margin-top:8px;border:0;border-radius:9px;background:#39ff59;color:#041006;font-weight:bold}
 .account .logout{background:#263a29;color:#caffce}
-#authMessage{color:#9fc5a3;font-size:12px;margin-top:10px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
 #retryButton{background:#b48aff;color:#160923}
+#authMessage{color:#9fc5a3;font-size:12px;margin-top:10px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap}
 .balance{text-align:center;background:#101b10}
 .balance-label{color:#82a882;font-size:12px}
 .balance-value{color:#39ff59;font-size:34px;font-weight:bold;margin:8px}
@@ -71,11 +72,13 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 [hidden]{display:none!important}
 </style>
 </head>
+
 <body>
 <header>
  <div class="logo">FAILORIA GAMES</div>
  <a class="back" href="index.html">← Все игры</a>
 </header>
+
 <main>
 <h1 class="title">🎰 FAILORIA CASINO</h1>
 <p class="subtitle">Игровой автомат 5 × 3</p>
@@ -100,30 +103,47 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 </section>
 
 <section id="gameArea" hidden>
+
  <section class="balance">
   <div class="balance-label">ТВОЙ БАЛАНС</div>
   <div class="balance-value" id="balance">1000</div>
   <div class="balance-label">виртуальных очков</div>
+
   <div class="stats">
-   <div class="stat"><div class="stat-value" id="totalSpins">0</div><div class="stat-label">ИГР СЫГРАНО</div></div>
-   <div class="stat"><div class="stat-value" id="totalWon">0</div><div class="stat-label">ВСЕГО НАЧИСЛЕНО</div></div>
-   <div class="stat"><div class="stat-value" id="bestWin">0</div><div class="stat-label">РЕКОРД</div></div>
+   <div class="stat">
+    <div class="stat-value" id="totalSpins">0</div>
+    <div class="stat-label">ИГР СЫГРАНО</div>
+   </div>
+   <div class="stat">
+    <div class="stat-value" id="totalWon">0</div>
+    <div class="stat-label">ВСЕГО НАЧИСЛЕНО</div>
+   </div>
+   <div class="stat">
+    <div class="stat-value" id="bestWin">0</div>
+    <div class="stat-label">РЕКОРД</div>
+   </div>
   </div>
  </section>
 
- <section class="machine"><div class="grid" id="grid"></div></section>
+ <section class="machine">
+  <div class="grid" id="grid"></div>
+ </section>
 
  <div class="controls">
   <section class="bet-panel">
    <div class="bet-label">СТАВКА В ИГРОВЫХ ОЧКАХ</div>
    <div class="bet-value" id="betValue">10</div>
    <div class="bet-buttons" id="betButtons">
-    <button data-bet="10">10</button><button data-bet="50">50</button>
-    <button data-bet="100">100</button><button data-bet="500">500</button>
-    <button data-bet="1000">1000</button><button data-bet="5000">5000</button>
+    <button data-bet="10">10</button>
+    <button data-bet="50">50</button>
+    <button data-bet="100">100</button>
+    <button data-bet="500">500</button>
+    <button data-bet="1000">1000</button>
+    <button data-bet="5000">5000</button>
     <button data-bet="10000">10000</button>
    </div>
   </section>
+
   <button class="play" id="playButton">КРУТИТЬ</button>
  </div>
 
@@ -140,10 +160,12 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
  <section class="super" id="superSection" hidden>
   <h2>⭐ SUPER GAME ⭐</h2>
   <p>Вход стоит 100 000 очков. Каждый выигрыш в суперигре умножается на 5.</p>
+
   <div class="super-round" id="superRound">Готов к испытанию?</div>
   <div class="super-timer" id="superTimer">10</div>
   <div class="super-bar"><div class="super-fill" id="superFill"></div></div>
   <div class="super-total" id="superTotal">Накоплено: 0</div>
+
   <button id="superStart">НАЧАТЬ СУПЕРИГРУ — 100 000</button>
   <button id="superAction" class="super-action" hidden>🎰 КРУТИТЬ СУПЕРСЛОТ</button>
   <div class="super-result" id="superResult"></div>
@@ -162,12 +184,50 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
   <div class="timer" id="bonusTimer">Бонус доступен при нулевом балансе</div>
   <button id="bonusButton" disabled>ПОЛУЧИТЬ 100 ОЧКОВ</button>
  </section>
+
 </section>
+
 <footer>FAILORIA GAMES © 2026</footer>
 </main>
 
 <script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+ initializeAuth,
+ inMemoryPersistence,
+ signInWithEmailAndPassword,
+ onAuthStateChanged,
+ signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+ getFirestore,
+ doc,
+ getDoc,
+ setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* FIREBASE */
+
+const firebaseConfig={
+ apiKey:"AIzaSyBkvQ49TJLLTAzLdRXzFMLh_0za8-07cRY",
+ authDomain:"filoria-8cf9f.firebaseapp.com",
+ projectId:"filoria-8cf9f",
+ storageBucket:"filoria-8cf9f.firebasestorage.app",
+ messagingSenderId:"974748954017",
+ appId:"1:974748954017:web:626fe05cf5a7df5485afe0",
+ measurementId:"G-7N8D3GMNZM"
+};
+
 const $=id=>document.getElementById(id);
+
+let app;
+let auth;
+let db;
+let user=null;
+let authReady=false;
+let authTimeout=null;
 
 const SUPER_COST=100000;
 const SUPER_ROUNDS=5;
@@ -176,30 +236,35 @@ const SUPER_MULTIPLIER=5;
 const BONUS_AMOUNT=100;
 const BONUS_INTERVAL=60000;
 
-const symbols=["🍒","🍒","💎","💎","💎","7️⃣","7️⃣","🍋","⭐","⭐","⭐","🔔"];
+const symbols=[
+ "🍒","🍒","💎","💎","💎","7️⃣","7️⃣",
+ "🍋","⭐","⭐","⭐","🔔"
+];
 
-let app,auth,db;
-let user=null;
-let balance=1000,bet=10,totalSpins=0,totalWon=0,bestWin=0,lastBonusAt=0;
-let spinning=false,cells=[];
-let superActive=false,superRoundNumber=0,superDeadline=0;
-let superTimerInterval=null,superTotal=0,superBusy=false;
-let authReady=false;
-let authTimeout=null;
-let loading=false;
+let balance=1000;
+let bet=10;
+let totalSpins=0;
+let totalWon=0;
+let bestWin=0;
+let lastBonusAt=0;
 
-function showAuthError(title,error){
- const details=error ? (error.code||error.message||String(error)) : "";
- $("accountStatus").textContent=title;
- $("authMessage").textContent=details;
- $("retryButton").hidden=false;
- console.error(title,error||"");
-}
+let spinning=false;
+let cells=[];
+
+let superActive=false;
+let superRoundNumber=0;
+let superDeadline=0;
+let superTimerInterval=null;
+let superTotal=0;
+let superBusy=false;
+
+/* СОЗДАНИЕ ИГРОВОГО ПОЛЯ */
 
 function createGrid(){
  const grid=$("grid");
  grid.innerHTML="";
  cells=[];
+
  for(let i=0;i<15;i++){
   const cell=document.createElement("div");
   cell.className="cell";
@@ -209,9 +274,10 @@ function createGrid(){
  }
 }
 
+/* FIRESTORE */
+
 function getGameRef(){
- if(!user)throw new Error("Пользователь не авторизован");
- return window.firestoreDoc(db,"gameProgress",user.uid,"games","casino");
+ return doc(db,"gameProgress",user.uid,"games","casino");
 }
 
 function updateUI(){
@@ -220,6 +286,7 @@ function updateUI(){
  $("totalSpins").textContent=totalSpins.toLocaleString("ru-RU");
  $("totalWon").textContent=totalWon.toLocaleString("ru-RU");
  $("bestWin").textContent=bestWin.toLocaleString("ru-RU");
+
  $("superSection").hidden=balance<SUPER_COST&&!superActive;
 
  document.querySelectorAll("[data-bet]").forEach(button=>{
@@ -227,32 +294,46 @@ function updateUI(){
   button.classList.toggle("selected",value===bet);
   button.disabled=value>balance||spinning||superActive;
  });
+
  $("playButton").disabled=spinning||balance<bet||superActive;
- $("bonusButton").disabled=balance!==0||Date.now()-lastBonusAt<BONUS_INTERVAL||superActive;
+
+ $("bonusButton").disabled=
+  balance!==0||
+  Date.now()-lastBonusAt<BONUS_INTERVAL||
+  superActive;
+
  updateBonusTimer();
 }
 
 async function saveGame(){
- if(!user||!db)return;
+ if(!user)return;
+
  try{
-  await window.firestoreSetDoc(getGameRef(),{
-   balance,bet,totalSpins,totalWon,bestWin,lastBonusAt,
+  await setDoc(getGameRef(),{
+   balance,
+   bet,
+   totalSpins,
+   totalWon,
+   bestWin,
+   lastBonusAt,
    updatedAt:Date.now()
   });
  }catch(error){
-  console.error("Firestore save error:",error);
-  $("message").textContent="Ошибка сохранения: "+(error.code||error.message);
+  console.error("Ошибка сохранения:",error);
+  $("message").textContent=
+   "Ошибка сохранения: "+(error.code||error.message);
  }
 }
 
 async function loadGame(){
- if(loading)return;
- loading=true;
  $("message").textContent="Загружаем игровой прогресс...";
+
  try{
-  const snapshot=await window.firestoreGetDoc(getGameRef());
+  const snapshot=await getDoc(getGameRef());
+
   if(snapshot.exists()){
    const data=snapshot.data();
+
    balance=Number(data.balance??1000);
    bet=Number(data.bet??10);
    totalSpins=Number(data.totalSpins??0);
@@ -260,19 +341,40 @@ async function loadGame(){
    bestWin=Number(data.bestWin??0);
    lastBonusAt=Number(data.lastBonusAt??0);
   }else{
-   balance=1000;bet=10;totalSpins=0;totalWon=0;bestWin=0;lastBonusAt=0;
+   balance=1000;
+   bet=10;
+   totalSpins=0;
+   totalWon=0;
+   bestWin=0;
+   lastBonusAt=0;
+
    await saveGame();
   }
-  if(![10,50,100,500,1000,5000,10000].includes(bet))bet=10;
+
+  if(![10,50,100,500,1000,5000,10000].includes(bet)){
+   bet=10;
+  }
+
   updateUI();
   createGrid();
+
   $("message").textContent="Игровой прогресс загружен!";
+
  }catch(error){
-  console.error("Firestore load error:",error);
-  $("message").textContent="Ошибка загрузки прогресса: "+(error.code||error.message);
- }finally{
-  loading=false;
+  console.error("Ошибка Firestore:",error);
+  $("message").textContent=
+   "Ошибка загрузки прогресса: "+(error.code||error.message);
  }
+}
+
+/* АВТОРИЗАЦИЯ */
+
+function showAuthError(title,error){
+ $("accountStatus").textContent=title;
+ $("authMessage").textContent=
+  error?(error.code||error.message||String(error)):"";
+ $("retryButton").hidden=false;
+ console.error(title,error||"");
 }
 
 async function initializeFirebase(){
@@ -280,45 +382,40 @@ async function initializeFirebase(){
  $("authMessage").textContent="";
  $("retryButton").hidden=true;
 
+ if(authTimeout){
+  clearTimeout(authTimeout);
+  authTimeout=null;
+ }
+
  try{
-  const appModule=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-  const authModule=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-  const firestoreModule=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+  app=initializeApp(firebaseConfig);
+  auth=initializeAuth(app,{
+   persistence:inMemoryPersistence
+  });
+  db=getFirestore(app);
 
-  const firebaseConfig={
-   apiKey:"AIzaSyBkvQ49TJLLTAzLdRXzFMLh_0za8-07cRY",
-   authDomain:"filoria-8cf9f.firebaseapp.com",
-   projectId:"filoria-8cf9f",
-   storageBucket:"filoria-8cf9f.firebasestorage.app",
-   messagingSenderId:"974748954017",
-   appId:"1:974748954017:web:626fe05cf5a7df5485afe0",
-   measurementId:"G-7N8D3GMNZM"
-  };
+  $("accountStatus").textContent=
+   "Firebase подключён. Проверяем авторизацию...";
 
-  app=appModule.initializeApp(firebaseConfig);
-  auth=authModule.getAuth(app);
-  db=firestoreModule.getFirestore(app);
-
-  window.firebaseSignIn=authModule.signInWithEmailAndPassword;
-  window.firebaseSignOut=authModule.signOut;
-  window.firebaseOnAuthStateChanged=authModule.onAuthStateChanged;
-  window.firestoreDoc=firestoreModule.doc;
-  window.firestoreGetDoc=firestoreModule.getDoc;
-  window.firestoreSetDoc=firestoreModule.setDoc;
-
-  $("accountStatus").textContent="Firebase подключён. Проверяем авторизацию...";
+  authReady=false;
 
   authTimeout=setTimeout(()=>{
    if(!authReady){
-    showAuthError("Firebase не ответил за 15 секунд. Проверь интернет и доступ к Firebase.",{
-     code:"auth/timeout"
-    });
+    showAuthError(
+     "Проверка авторизации не завершилась за 15 секунд.",
+     {code:"auth/timeout"}
+    );
    }
   },15000);
 
-  authModule.onAuthStateChanged(auth,async currentUser=>{
+  onAuthStateChanged(auth,async currentUser=>{
    authReady=true;
-   clearTimeout(authTimeout);
+
+   if(authTimeout){
+    clearTimeout(authTimeout);
+    authTimeout=null;
+   }
+
    user=currentUser;
 
    if(user){
@@ -329,221 +426,377 @@ async function initializeFirebase(){
     $("gameArea").hidden=false;
     $("retryButton").hidden=true;
     $("authMessage").textContent="";
+
     await loadGame();
+
    }else{
     stopSuperTimer();
     superActive=false;
+
     $("accountStatus").textContent="Войди в свой аккаунт";
     $("loginForm").hidden=false;
     $("userPanel").hidden=true;
     $("gameArea").hidden=true;
-    $("authMessage").textContent="Авторизация Firebase работает. Выполни вход.";
+    $("authMessage").textContent=
+     "Firebase работает. Войди в свой аккаунт.";
    }
+
   },error=>{
    authReady=true;
-   clearTimeout(authTimeout);
-   showAuthError("Ошибка проверки авторизации",error);
+
+   if(authTimeout){
+    clearTimeout(authTimeout);
+    authTimeout=null;
+   }
+
+   showAuthError("Ошибка проверки авторизации:",error);
   });
 
  }catch(error){
-  clearTimeout(authTimeout);
-  showAuthError("Не удалось запустить Firebase. Подробности:",error);
+  showAuthError("Ошибка запуска Firebase:",error);
  }
 }
 
 $("retryButton").onclick=()=>{
- authReady=false;
  initializeFirebase();
 };
 
 $("loginButton").onclick=async()=>{
- if(!auth)return;
  const email=$("email").value.trim();
  const password=$("password").value;
+
  if(!email||!password){
   $("authMessage").textContent="Заполни почту и пароль.";
   return;
  }
+
  $("loginButton").disabled=true;
  $("authMessage").textContent="Выполняется вход...";
+
  try{
-  await window.firebaseSignIn(auth,email,password);
+  await signInWithEmailAndPassword(auth,email,password);
   $("authMessage").textContent="";
  }catch(error){
-  $("authMessage").textContent="Ошибка входа: "+(error.code||error.message);
+  $("authMessage").textContent=
+   "Ошибка входа: "+(error.code||error.message);
  }finally{
   $("loginButton").disabled=false;
  }
 };
 
 $("logoutButton").onclick=async()=>{
- try{await window.firebaseSignOut(auth);}
- catch(error){$("authMessage").textContent="Ошибка выхода: "+(error.code||error.message);}
+ try{
+  await signOut(auth);
+ }catch(error){
+  $("authMessage").textContent=
+   "Ошибка выхода: "+(error.code||error.message);
+ }
 };
+
+/* ВЫБОР СТАВКИ */
 
 $("betButtons").addEventListener("click",event=>{
  const button=event.target.closest("[data-bet]");
+
  if(!button||spinning||superActive)return;
+
  const value=Number(button.dataset.bet);
+
  if(value>balance)return;
+
  bet=value;
  updateUI();
  saveGame();
 });
 
+/* ВЫИГРЫШНЫЕ ЛИНИИ */
+
 function getWinningLines(){
- return [[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[0,6,12],[4,8,12]];
+ return [
+  [0,1,2,3,4],
+  [5,6,7,8,9],
+  [10,11,12,13,14],
+  [0,6,12],
+  [4,8,12]
+ ];
 }
 
 function calculateWin(){
  let win=0;
  const winningCells=new Set();
+
  for(const line of getWinningLines()){
   const first=cells[line[0]].textContent;
+
   if(line.every(index=>cells[index].textContent===first)){
    let multiplier=5;
+
    if(first==="7️⃣")multiplier=100;
    else if(first==="💎")multiplier=30;
    else if(first==="⭐")multiplier=15;
+
    win+=bet*multiplier;
+
    line.forEach(index=>winningCells.add(index));
   }
  }
+
  return {win,winningCells};
 }
 
+/* ВРАЩЕНИЕ АВТОМАТА */
+
 async function spinMachine(){
- cells.forEach(cell=>{cell.classList.remove("win");cell.classList.add("spinning");});
+ cells.forEach(cell=>{
+  cell.classList.remove("win");
+  cell.classList.add("spinning");
+ });
+
  await new Promise(resolve=>setTimeout(resolve,1000));
+
  cells.forEach(cell=>{
   cell.classList.remove("spinning");
-  cell.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+  cell.textContent=symbols[
+   Math.floor(Math.random()*symbols.length)
+  ];
  });
+
  return calculateWin();
 }
 
+/* ОБЫЧНАЯ ИГРА */
+
 async function play(){
  if(spinning||superActive||balance<bet)return;
+
  spinning=true;
  balance-=bet;
  totalSpins++;
+
  updateUI();
  $("message").textContent="Крутим...";
+
  try{
   const result=await spinMachine();
+
   if(result.win>0){
    balance+=result.win;
    totalWon+=result.win;
    bestWin=Math.max(bestWin,result.win);
-   result.winningCells.forEach(index=>cells[index].classList.add("win"));
-   $("message").textContent="🎉 ПОБЕДА! Начислено "+result.win.toLocaleString("ru-RU")+" очков!";
+
+   result.winningCells.forEach(index=>{
+    cells[index].classList.add("win");
+   });
+
+   $("message").textContent=
+    "🎉 ПОБЕДА! Начислено "+
+    result.win.toLocaleString("ru-RU")+" очков!";
+
   }else{
-   $("message").textContent="В этот раз без совпадений. Попробуй ещё!";
+   $("message").textContent=
+    "В этот раз без совпадений. Попробуй ещё!";
   }
+
  }catch(error){
   $("message").textContent="Ошибка игры: "+error.message;
+
  }finally{
   spinning=false;
   updateUI();
   await saveGame();
  }
 }
+
 $("playButton").onclick=play;
 
 /* СУПЕРИГРА */
+
 function stopSuperTimer(){
  if(superTimerInterval){
   clearInterval(superTimerInterval);
   superTimerInterval=null;
  }
 }
+
 function updateSuperTimer(){
  if(!superActive)return;
+
  const remaining=Math.max(0,superDeadline-Date.now());
+
  $("superTimer").textContent=Math.ceil(remaining/1000);
- $("superFill").style.width=(remaining/(SUPER_TIME*1000)*100)+"%";
- if(remaining<=0)finishSuperGame(false);
+
+ $("superFill").style.width=
+  (remaining/(SUPER_TIME*1000)*100)+"%";
+
+ if(remaining<=0){
+  finishSuperGame(false);
+ }
 }
+
 function startRoundTimer(){
  superDeadline=Date.now()+SUPER_TIME*1000;
+
  stopSuperTimer();
  updateSuperTimer();
+
  superTimerInterval=setInterval(updateSuperTimer,100);
 }
+
 async function startSuperGame(){
  if(superActive||balance<SUPER_COST||!user)return;
- if(!confirm("Начать суперигру за 100 000 очков? Очки не возвращаются при проигрыше."))return;
+
+ const confirmed=confirm(
+  "Начать суперигру за 100 000 очков? "+
+  "При проигрыше входные очки не возвращаются."
+ );
+
+ if(!confirmed)return;
+
  superActive=true;
  superRoundNumber=1;
  superTotal=0;
  superBusy=false;
+
  balance-=SUPER_COST;
+
  $("superResult").textContent="";
  $("superStart").hidden=true;
  $("superAction").hidden=false;
  $("superAction").disabled=false;
+
  $("superRound").textContent="РАУНД 1 ИЗ 5";
  $("superTotal").textContent="Накоплено: 0";
  $("superAction").textContent="🎰 КРУТИТЬ СУПЕРСЛОТ";
+
  updateUI();
  await saveGame();
+
  startRoundTimer();
 }
+
 async function superSpin(){
  if(!superActive||superBusy)return;
- if(Date.now()>=superDeadline){finishSuperGame(false);return;}
+
+ if(Date.now()>=superDeadline){
+  await finishSuperGame(false);
+  return;
+ }
+
  superBusy=true;
  stopSuperTimer();
+
  $("superAction").disabled=true;
- $("superRound").textContent="РАУНД "+superRoundNumber+" ИЗ 5 — ВРАЩЕНИЕ!";
+ $("superRound").textContent=
+  "РАУНД "+superRoundNumber+" ИЗ 5 — ВРАЩЕНИЕ!";
  $("superTimer").textContent="🎰";
+
  try{
   const result=await spinMachine();
+
   if(!superActive)return;
+
   const multipliedWin=result.win*SUPER_MULTIPLIER;
+
   superTotal+=multipliedWin;
-  if(result.win>0)result.winningCells.forEach(index=>cells[index].classList.add("win"));
-  $("superTotal").textContent="Накоплено: "+superTotal.toLocaleString("ru-RU");
+
+  if(result.win>0){
+   result.winningCells.forEach(index=>{
+    cells[index].classList.add("win");
+   });
+  }
+
+  $("superTotal").textContent=
+   "Накоплено: "+superTotal.toLocaleString("ru-RU");
+
   $("superResult").textContent=result.win>0
-   ?"Выигрыш раунда: "+result.win.toLocaleString("ru-RU")+" × 5 = "+multipliedWin.toLocaleString("ru-RU")
-   :"В этом раунде нет совпадений. Выигрыш: 0";
+   ? "Выигрыш раунда: "+
+     result.win.toLocaleString("ru-RU")+
+     " × 5 = "+
+     multipliedWin.toLocaleString("ru-RU")
+   : "В этом раунде нет совпадений. Выигрыш: 0";
+
   superBusy=false;
-  if(superRoundNumber>=SUPER_ROUNDS){await finishSuperGame(true);return;}
+
+  if(superRoundNumber>=SUPER_ROUNDS){
+   await finishSuperGame(true);
+   return;
+  }
+
   superRoundNumber++;
-  $("superRound").textContent="РАУНД "+superRoundNumber+" ИЗ 5";
+
+  $("superRound").textContent=
+   "РАУНД "+superRoundNumber+" ИЗ 5";
+
   $("superAction").disabled=false;
-  $("superAction").textContent="🎰 КРУТИТЬ РАУНД "+superRoundNumber;
+  $("superAction").textContent=
+   "🎰 КРУТИТЬ РАУНД "+superRoundNumber;
+
   startRoundTimer();
+
  }catch(error){
   superBusy=false;
-  $("superResult").textContent="Ошибка суперигры: "+error.message;
+
+  $("superResult").textContent=
+   "Ошибка суперигры: "+error.message;
+
+  await finishSuperGame
+  (true);
+   return;
+  }
+
+  superRoundNumber++;
+
+  $("superRound").textContent=
+   "РАУНД "+superRoundNumber+" ИЗ 5";
+
+  $("superAction").disabled=false;
+  $("superAction").textContent=
+   "🎰 КРУТИТЬ РАУНД "+superRoundNumber;
+
+  startRoundTimer();
+
+ }catch(error){
+  superBusy=false;
+
+  $("superResult").textContent=
+   "Ошибка суперигры: "+error.message;
+
   await finishSuperGame(false);
  }
 }
+
 async function finishSuperGame(success){
  if(!superActive)return;
+
  stopSuperTimer();
  superActive=false;
  superBusy=false;
+
  $("superAction").hidden=true;
  $("superStart").hidden=false;
  $("superStart").disabled=false;
+
  if(success){
   balance+=superTotal;
   totalWon+=superTotal;
-    bestWin=Math.max(bestWin,superTotal);
+  bestWin=Math.max(bestWin,superTotal);
+
   $("superRound").textContent="🏆 ВСЕ 5 РАУНДОВ ПРОЙДЕНЫ!";
   $("superTimer").textContent="🏆";
   $("superFill").style.width="100%";
+
   $("superResult").textContent=
    "ПОБЕДА! На баланс начислено "+
    superTotal.toLocaleString("ru-RU")+" очков!";
+
  }else{
   $("superRound").textContent="ИГРА ЗАВЕРШЕНА";
   $("superTimer").textContent="0";
   $("superFill").style.width="0%";
+
   $("superResult").textContent=
-   "Время вышло! Накопленный выигрыш сгорел. Входные 100 000 очков не возвращаются.";
+   "Время вышло! Накопленный выигрыш сгорел. "+
+   "Входные 100 000 очков не возвращаются.";
  }
 
  $("superTotal").textContent=
@@ -556,16 +809,23 @@ async function finishSuperGame(success){
 $("superStart").onclick=startSuperGame;
 $("superAction").onclick=superSpin;
 
-/* БОНУС */
+/* БОНУС +100 */
+
 function updateBonusTimer(){
  if(!user)return;
 
- const remaining=Math.max(0,BONUS_INTERVAL-(Date.now()-lastBonusAt));
+ const remaining=Math.max(
+  0,
+  BONUS_INTERVAL-(Date.now()-lastBonusAt)
+ );
 
  if(balance!==0){
-  $("bonusTimer").textContent="Бонус доступен при нулевом балансе";
+  $("bonusTimer").textContent=
+   "Бонус доступен при нулевом балансе";
  }else if(remaining>0){
-  $("bonusTimer").textContent="Следующий бонус через "+Math.ceil(remaining/1000)+" сек.";
+  $("bonusTimer").textContent=
+   "Следующий бонус через "+
+   Math.ceil(remaining/1000)+" сек.";
  }else{
   $("bonusTimer").textContent="Бонус уже доступен!";
  }
@@ -581,14 +841,19 @@ $("bonusButton").onclick=async()=>{
  balance+=BONUS_AMOUNT;
  lastBonusAt=Date.now();
 
- $("message").textContent="🎁 Получено 100 бесплатных очков!";
+ $("message").textContent=
+  "🎁 Получено 100 бесплатных очков!";
+
  updateUI();
  await saveGame();
 };
 
+/* ЗАПУСК */
+
 setInterval(updateBonusTimer,1000);
 createGrid();
 initializeFirebase();
+
 </script>
 </body>
 </html>
