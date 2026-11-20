@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#050805">
-<title>Failoria Casino 2.0</title>
+<title>Failoria Casino</title>
 
 <style>
 *{box-sizing:border-box}
@@ -25,7 +25,7 @@ main{max-width:650px;margin:auto}
  margin:30px 0 8px;text-shadow:0 0 15px #39ff59
 }
 .subtitle{text-align:center;color:#82a882;font-size:13px}
-.account,.balance,.machine,.info,.rewards{
+.account,.balance,.machine,.info,.rewards,.bonus,.super{
  background:#0b150d;border:1px solid #286b35;
  border-radius:14px;padding:16px;margin:22px 0
 }
@@ -38,6 +38,7 @@ main{max-width:650px;margin:auto}
  border:1px solid #286b35;border-radius:9px;
  background:#071008;color:white
 }
+button{cursor:pointer}
 .account button{
  padding:12px 16px;margin-top:8px;border:0;
  border-radius:9px;background:#39ff59;color:#041006;font-weight:bold
@@ -63,10 +64,7 @@ main{max-width:650px;margin:auto}
  border-radius:9px;display:flex;align-items:center;
  justify-content:center;font-size:clamp(23px,7vw,39px)
 }
-.cell.win{
- border-color:#39ff59;background:#193d20;
- box-shadow:0 0 15px #39ff5970
-}
+.cell.win{border-color:#39ff59;background:#193d20;box-shadow:0 0 15px #39ff5970}
 .cell.spinning{animation:shake .12s infinite alternate}
 @keyframes shake{
  from{transform:translateY(-2px)}
@@ -87,33 +85,46 @@ main{max-width:650px;margin:auto}
 .bet-buttons button:disabled,.play:disabled{opacity:.4}
 .play{
  width:100%;padding:17px;border:0;border-radius:12px;
- background:#39ff59;color:#041006;font-size:17px;
- font-weight:900;cursor:pointer
+ background:#39ff59;color:#041006;font-size:17px;font-weight:900
 }
-.message{
- min-height:48px;text-align:center;margin-top:18px;
- color:#a9d5ae;font-weight:bold;line-height:1.5
-}
+.message{min-height:48px;text-align:center;margin-top:18px;color:#a9d5ae;font-weight:bold;line-height:1.5}
 .rewards{line-height:2;color:#a9cbaa}
-.reward-row{
- display:flex;justify-content:space-between;gap:10px;
- border-bottom:1px solid #1c3921;padding:5px 0
-}
+.reward-row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #1c3921;padding:5px 0}
 .reward-row strong{color:#39ff59}
+.bonus{
+ text-align:center;border-color:#39ff59;
+ background:linear-gradient(145deg,#102514,#091109)
+}
+.bonus h2{color:#39ff59;font-size:22px;margin:5px}
+.bonus p{color:#a9cbaa;font-size:13px;line-height:1.6}
+.bonus button,.super button{
+ width:100%;padding:15px;border:0;border-radius:10px;
+ background:#39ff59;color:#041006;font-weight:900;font-size:15px
+}
+.bonus button:disabled,.super button:disabled{opacity:.4}
+.timer{font-size:22px;color:#39ff59;font-weight:bold;margin:12px}
+.super{
+ border:1px solid #b48aff;
+ background:linear-gradient(145deg,#211333,#0c0b15)
+}
+.super h2{color:#c49aff;text-align:center}
+.super p{color:#c1b1d5;font-size:13px;text-align:center;line-height:1.6}
+.super button{background:#b48aff;color:#160923}
+.super-result{text-align:center;color:#d7baff;margin-top:12px;font-weight:bold}
 .info{color:#8ebd8e;font-size:12px;line-height:1.8}
 footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 [hidden]{display:none!important}
 </style>
 </head>
-<body>
 
+<body>
 <header>
  <div class="logo">FAILORIA GAMES</div>
  <a class="back" href="index.html">← Все игры</a>
 </header>
 
 <main>
-<h1 class="title">🎰 CASINO 2.0</h1>
+<h1 class="title">🎰 FAILORIA CASINO</h1>
 <p class="subtitle">Игровой автомат 5 × 3</p>
 
 <section class="account">
@@ -132,6 +143,7 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 </section>
 
 <section id="gameArea" hidden>
+
  <section class="balance">
   <div class="balance-label">ТВОЙ БАЛАНС</div>
   <div class="balance-value" id="balance">1000</div>
@@ -150,6 +162,14 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
     <div class="stat-label">РЕКОРД</div>
    </div>
   </div>
+ </section>
+
+ <section class="bonus">
+  <h2>🎁 БЕСПЛАТНЫЙ БОНУС</h2>
+  <p>Если баланс равен нулю, можно получить 100 виртуальных очков раз в минуту.</p>
+  <div class="timer" id="bonusTimer">01:00</div>
+  <button id="bonusButton" disabled>ПОЛУЧИТЬ +100</button>
+  <p id="bonusMessage">Бонус доступен при нулевом балансе.</p>
  </section>
 
  <section class="machine">
@@ -171,6 +191,15 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
  </section>
 
  <div class="message" id="message">Удачи в игре!</div>
+
+ <section class="super">
+  <h2>💜 SUPER GAME</h2>
+  <p>Особое испытание открывается при достижении 100 000 виртуальных очков.</p>
+  <p id="superStatus">Проверяем доступ...</p>
+  <button id="superButton" disabled>ОТКРЫТЬ SUPER GAME</button>
+  <div id="superResult" class="super-result"></div>
+ </section>
+
 </section>
 
 <section class="rewards">
@@ -179,17 +208,14 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
  <div class="reward-row"><span>💎 Три алмаза</span><strong>300 очков</strong></div>
  <div class="reward-row"><span>⭐ Три звезды</span><strong>150 очков</strong></div>
  <div class="reward-row"><span>🍒 🍋 🔔 Три одинаковых</span><strong>50 очков</strong></div>
- <p style="font-size:11px;color:#82a882;margin-top:10px">
- Награды начисляются за каждую совпавшую комбинацию.
- </p>
 </section>
 
 <section class="info">
  <div class="info-title">ПРАВИЛА</div>
  • Игровое поле 5 × 3.
  <br>• Совпадения учитываются по горизонтали и диагонали.
- <br>• За каждую комбинацию начисляется указанная награда.
- <br>• Очки виртуальные и не имеют денежной стоимости.
+ <br>• Награды начисляются за совпадения.
+ <br>• Все очки виртуальные.
 </section>
 </main>
 
@@ -220,19 +246,22 @@ const db=getFirestore(app);
 
 const symbols=["🍒","💎","7️⃣","🍋","⭐","🔔"];
 const MAX_LEVEL=10000;
+const BONUS_AMOUNT=100;
+const BONUS_INTERVAL=60000;
+const SUPER_REQUIRED=100000;
+
 let balance=1000,bet=10,spinning=false,currentUser=null;
-let totalSpins=0,totalWon=0,bestWin=0,progressRef=null;
-let cells=[];
+let totalSpins=0,totalWon=0,bestWin=0;
+let progressRef=null,lastBonusAt=0,bonusBusy=false;
+let cells=[],bonusInterval=null;
 
 const $=id=>document.getElementById(id);
-const grid=$("grid");
-const playButton=$("play");
 
 for(let i=0;i<15;i++){
  const cell=document.createElement("div");
  cell.className="cell";
  cell.textContent="❔";
- grid.appendChild(cell);
+ $("grid").appendChild(cell);
  cells.push(cell);
 }
 
@@ -248,17 +277,25 @@ function update(){
  $("totalSpins").textContent=totalSpins.toLocaleString("ru-RU");
  $("totalWon").textContent=totalWon.toLocaleString("ru-RU");
  $("bestWin").textContent=bestWin.toLocaleString("ru-RU");
+
  $("stepInfo").textContent="Шаг: "+step().toLocaleString("ru-RU");
  $("minus").disabled=spinning||bet<=10;
  $("plus").disabled=spinning||bet>=MAX_LEVEL;
  $("max").disabled=spinning||bet>=MAX_LEVEL;
- playButton.disabled=spinning||balance<bet||!currentUser;
+ $("play").disabled=spinning||balance<bet||!currentUser;
+
+ const unlocked=balance>=SUPER_REQUIRED;
+ $("superButton").disabled=!unlocked||spinning;
+ $("superStatus").textContent=unlocked?
+  "SUPER GAME ОТКРЫТА!":
+  "Нужно набрать ещё "+Math.max(0,SUPER_REQUIRED-balance).toLocaleString("ru-RU")+" очков.";
+ updateBonus();
 }
 
 async function saveProgress(){
  if(!progressRef)throw new Error("Нет ссылки на профиль");
  await setDoc(progressRef,{
-  balance,bet,totalSpins,totalWon,bestWin,
+  balance,bet,totalSpins,totalWon,bestWin,lastBonusAt,
   updatedAt:serverTimestamp()
  },{merge:true});
 }
@@ -275,9 +312,10 @@ async function loadProgress(user){
    totalWon=Number.isFinite(d.totalWon)?d.totalWon:0;
    bestWin=Number.isFinite(d.bestWin)?d.bestWin:0;
    bet=Number.isFinite(d.bet)?Math.min(MAX_LEVEL,Math.max(10,d.bet)):10;
+   lastBonusAt=Number.isFinite(d.lastBonusAt)?d.lastBonusAt:0;
   }else{
    balance=1000;bet=10;
-   totalSpins=0;totalWon=0;bestWin=0;
+   totalSpins=0;totalWon=0;bestWin=0;lastBonusAt=0;
    await saveProgress();
   }
   update();
@@ -287,6 +325,46 @@ async function loadProgress(user){
   $("message").textContent="Ошибка загрузки. Проверь Firestore.";
  }
 }
+
+function updateBonus(){
+ const remaining=Math.max(0,BONUS_INTERVAL-(Date.now()-lastBonusAt));
+ const ready=remaining===0&&balance===0&&!bonusBusy;
+ const seconds=Math.ceil(remaining/1000);
+ $("bonusTimer").textContent=
+  String(Math.floor(seconds/60)).padStart(2,"0")+":"+
+  String(seconds%60).padStart(2,"0");
+ $("bonusButton").disabled=!ready||!currentUser;
+ $("bonusMessage").textContent=balance>0?
+  "Бонус станет доступен при нулевом балансе.":
+  ready?"Бонус готов! Получи 100 очков.":"Ожидай следующего бонуса.";
+}
+
+async function claimBonus(){
+ if(bonusBusy||!currentUser||balance!==0)return;
+ if(Date.now()-lastBonusAt<BONUS_INTERVAL)return;
+
+ bonusBusy=true;
+ $("bonusButton").disabled=true;
+
+ const oldBalance=balance;
+ const oldTime=lastBonusAt;
+ balance=BONUS_AMOUNT;
+ lastBonusAt=Date.now();
+ update();
+
+ try{
+  await saveProgress();
+  $("bonusMessage").textContent="Получено +100 виртуальных очков!";
+ }catch(e){
+  balance=oldBalance;
+  lastBonusAt=oldTime;
+  $("bonusMessage").textContent="Ошибка сохранения бонуса.";
+ }
+ bonusBusy=false;
+ update();
+}
+
+$("bonusButton").onclick=claimBonus;
 
 $("minus").onclick=()=>{
  if(spinning)return;
@@ -343,7 +421,7 @@ function spin(){
  return result;
 }
 
-playButton.onclick=async()=>{
+$("play").onclick=async()=>{
  if(spinning||!currentUser||balance<bet)return;
  spinning=true;
  balance-=bet;
@@ -382,16 +460,26 @@ playButton.onclick=async()=>{
  update();
 };
 
+$("superButton").onclick=()=>{
+ if(balance<SUPER_REQUIRED||spinning)return;
+ $("superResult").textContent="💜 SUPER GAME! Испытание открыто. Поздравляем!";
+};
+
 onAuthStateChanged(auth,async user=>{
  currentUser=user;
+ if(bonusInterval){
+  clearInterval(bonusInterval);
+  bonusInterval=null;
+ }
  if(user){
   $("accountStatus").textContent="Ты вошёл в Failoria.";
   $("loginForm").hidden=true;
   $("userPanel").hidden=false;
   $("userEmail").textContent=user.email||"Аккаунт авторизован";
   $("gameArea").hidden=false;
-  playButton.disabled=true;
+  $("play").disabled=true;
   await loadProgress(user);
+  bonusInterval=setInterval(updateBonus,1000);
  }else{
   $("accountStatus").textContent="Войди через Failoria ID.";
   $("loginForm").hidden=false;
@@ -428,5 +516,4 @@ $("logoutButton").onclick=async()=>{
 update();
 </script>
 </body>
- </html>
- 
+</html>
