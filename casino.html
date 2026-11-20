@@ -21,6 +21,7 @@ main{max-width:650px;margin:auto}
 .account-status{color:#91b994;font-size:12px;margin-bottom:10px}
 .account input{width:100%;padding:12px;margin:5px 0;border:1px solid #286b35;border-radius:9px;background:#071008;color:white}
 button{cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
 .account button{padding:12px 16px;margin-top:8px;border:0;border-radius:9px;background:#39ff59;color:#041006;font-weight:bold}
 .account .logout{background:#263a29;color:#caffce}
 #authMessage{color:#9fc5a3;font-size:12px;margin-top:10px}
@@ -44,7 +45,6 @@ button{cursor:pointer}
 .bet-buttons{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .bet-buttons button{padding:11px 14px;background:#142516;color:#39ff59;border:1px solid #286b35;border-radius:9px;font-weight:bold}
 .bet-buttons button.selected{background:#39ff59;color:#041006}
-.bet-buttons button:disabled,.play:disabled,.bonus button:disabled,.super button:disabled{opacity:.4;cursor:not-allowed}
 .play{width:100%;padding:17px;border:0;border-radius:12px;background:#39ff59;color:#041006;font-size:17px;font-weight:900}
 .message{min-height:48px;text-align:center;margin-top:18px;color:#a9d5ae;font-weight:bold;line-height:1.5}
 .rewards{line-height:1.8;color:#a9cbaa}
@@ -55,7 +55,12 @@ button{cursor:pointer}
 .super h2{color:#c49aff;text-align:center}
 .super p{color:#c1b1d5;font-size:13px;text-align:center;line-height:1.6}
 .super button{width:100%;padding:15px;border:0;border-radius:10px;background:#b48aff;color:#160923;font-weight:900}
-.super-result{text-align:center;color:#d7baff;margin-top:12px;font-weight:bold}
+.super-result{text-align:center;color:#d7baff;margin-top:12px;font-weight:bold;line-height:1.6}
+.super-timer{text-align:center;font-size:40px;font-weight:900;color:#d7baff;margin:15px}
+.super-round{text-align:center;color:#e1ceff;font-size:14px;margin:12px 0}
+.super-bar{height:9px;background:#38244d;border-radius:10px;overflow:hidden;margin:12px 0}
+.super-fill{height:100%;width:100%;background:#b48aff}
+.super-action{margin-top:12px}
 .bonus{text-align:center;border-color:#39ff59;background:linear-gradient(145deg,#102514,#091109)}
 .bonus h2{color:#39ff59;font-size:22px;margin:5px}
 .bonus p{color:#a9cbaa;font-size:13px;line-height:1.6}
@@ -74,7 +79,6 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
 <main>
 <h1 class="title">🎰 FAILORIA CASINO</h1>
-<p class="subtitle">Игровой автомат 5 × 3</p>
 
 <section class="account">
  <div class="account-title">АККАУНТ FAILORIA</div>
@@ -98,13 +102,22 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
  <section class="balance">
   <div class="balance-label">ТВОЙ БАЛАНС</div>
-  <div class="balance-value" id="balance">1000</div>
+  <div class="balance-value" id="balance">10000</div>
   <div class="balance-label">виртуальных очков</div>
 
   <div class="stats">
-   <div class="stat"><div class="stat-value" id="totalSpins">0</div><div class="stat-label">ИГР СЫГРАНО</div></div>
-   <div class="stat"><div class="stat-value" id="totalWon">0</div><div class="stat-label">ВСЕГО НАЧИСЛЕНО</div></div>
-   <div class="stat"><div class="stat-value" id="bestWin">0</div><div class="stat-label">РЕКОРД</div></div>
+   <div class="stat">
+    <div class="stat-value" id="totalSpins">0</div>
+    <div class="stat-label">ИГР СЫГРАНО</div>
+   </div>
+   <div class="stat">
+    <div class="stat-value" id="totalWon">0</div>
+    <div class="stat-label">ВСЕГО НАЧИСЛЕНО</div>
+   </div>
+   <div class="stat">
+    <div class="stat-value" id="bestWin">0</div>
+    <div class="stat-label">РЕКОРД</div>
+   </div>
   </div>
  </section>
 
@@ -124,6 +137,7 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
     <button data-bet="1000">1000</button>
     <button data-bet="5000">5000</button>
     <button data-bet="10000">10000</button>
+    <button data-bet="10000">50000</button>
    </div>
   </section>
 
@@ -142,8 +156,14 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
  <section class="super" id="superSection" hidden>
   <h2>⭐ SUPER GAME ⭐</h2>
-  <p>Ты накопил 110 000 очков! Суперигра открыта.</p>
-  <button id="superButton">ОТКРЫТЬ СУПЕРИГРУ</button>
+  <p>Для запуска нужно 100 000 очков. При старте они будут списаны с баланса.</p>
+
+  <div class="super-round" id="superRound">Готов к испытанию?</div>
+  <div class="super-timer" id="superTimer">10</div>
+  <div class="super-bar"><div class="super-fill" id="superFill"></div></div>
+
+  <button id="superStart">НАЧАТЬ СУПЕРИГРУ — 100 000</button>
+  <button id="superAction" class="super-action" hidden>НАЖАТЬ!</button>
   <div class="super-result" id="superResult"></div>
  </section>
 
@@ -156,8 +176,8 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
  <section class="bonus">
   <h2>🎁 БОНУС +100</h2>
-  <p>Если баланс стал равен нулю, ты можешь получить 100 бесплатных очков.</p>
-  <div class="timer" id="bonusTimer">Бонус доступен при нулевом балансе</div>
+  <p>ты можешь получить 100 бесплатных очков.</p>
+  <div class="timer" id="bonusTimer">Бонус доступен</div>
   <button id="bonusButton" disabled>ПОЛУЧИТЬ 100 ОЧКОВ</button>
  </section>
 
@@ -175,25 +195,26 @@ import {
  getFirestore,doc,getDoc,setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
+const firebaseConfig={
  apiKey:"AIzaSyBkvQ49TJLLTAzLdRXzFMLh_0za8-07cRY",
  authDomain:"filoria-8cf9f.firebaseapp.com",
  projectId:"filoria-8cf9f",
  storageBucket:"filoria-8cf9f.firebasestorage.app",
  messagingSenderId:"974748954017",
  appId:"1:974748954017:web:626fe05cf5a7df5485afe0",
- measurementId:"G-8N7D3GMNZM"
+ measurementId:"G-7N8D3GMNZM"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-const SUPER_GAME_REQUIRED=110000;
+const SUPER_COST=100000;
+const SUPER_ROUNDS=5;
+const SUPER_TIME=10;
 const BONUS_AMOUNT=100;
 const BONUS_INTERVAL=60000;
 
-/* Повышенная вероятность ценных символов */
 const symbols=[
  "🍒","🍒",
  "💎","💎","💎",
@@ -206,7 +227,7 @@ const symbols=[
 const $=id=>document.getElementById(id);
 
 let user=null;
-let balance=1000;
+let balance=10000;
 let bet=10;
 let totalSpins=0;
 let totalWon=0;
@@ -214,6 +235,11 @@ let bestWin=0;
 let lastBonusAt=0;
 let spinning=false;
 let cells=[];
+
+let superActive=false;
+let superRoundNumber=0;
+let superDeadline=0;
+let superTimerInterval=null;
 
 function getGameRef(){
  return doc(db,"gameProgress",user.uid,"games","casino");
@@ -226,17 +252,18 @@ function updateUI(){
  $("totalWon").textContent=totalWon.toLocaleString("ru-RU");
  $("bestWin").textContent=bestWin.toLocaleString("ru-RU");
 
- $("superSection").hidden=balance<SUPER_GAME_REQUIRED;
- $("bonusButton").disabled=balance!==0 ||
-  Date.now()-lastBonusAt<BONUS_INTERVAL;
+ $("superSection").hidden=balance<SUPER_COST&&!superActive;
 
  document.querySelectorAll("[data-bet]").forEach(button=>{
   const value=Number(button.dataset.bet);
   button.classList.toggle("selected",value===bet);
-  button.disabled=value>balance||spinning;
+  button.disabled=value>balance||spinning||superActive;
  });
 
- $("playButton").disabled=spinning||balance<bet;
+ $("playButton").disabled=spinning||balance<bet||superActive;
+ $("bonusButton").disabled=balance!==0||
+  Date.now()-lastBonusAt<BONUS_INTERVAL;
+
  updateBonusTimer();
 }
 
@@ -256,6 +283,7 @@ function createGrid(){
 
 async function saveGame(){
  if(!user)return;
+
  try{
   await setDoc(getGameRef(),{
    balance,bet,totalSpins,totalWon,bestWin,lastBonusAt,
@@ -280,7 +308,7 @@ async function loadGame(){
    bestWin=Number(data.bestWin??0);
    lastBonusAt=Number(data.lastBonusAt??0);
   }else{
-   balance=1000;
+   balance=10000;
    bet=10;
    totalSpins=0;
    totalWon=0;
@@ -289,7 +317,7 @@ async function loadGame(){
    await saveGame();
   }
 
-  if(![10,50,100,500,1000,5000,10000].includes(bet))bet=10;
+  if(![10,50,100,500,1000,5000,10000,20000,30000,40000,50000,100000].includes(bet))bet=10;
 
   updateUI();
   createGrid();
@@ -333,6 +361,8 @@ onAuthStateChanged(auth,async currentUser=>{
   $("gameArea").hidden=false;
   await loadGame();
  }else{
+  stopSuperTimer();
+  superActive=false;
   $("accountStatus").textContent="Войди в свой аккаунт";
   $("loginForm").hidden=false;
   $("userPanel").hidden=true;
@@ -342,7 +372,7 @@ onAuthStateChanged(auth,async currentUser=>{
 
 $("betButtons").addEventListener("click",event=>{
  const button=event.target.closest("[data-bet]");
- if(!button||spinning)return;
+ if(!button||spinning||superActive)return;
 
  const value=Number(button.dataset.bet);
  if(value>balance)return;
@@ -384,7 +414,7 @@ function calculateWin(){
 }
 
 async function play(){
- if(spinning||balance<bet)return;
+ if(spinning||superActive||balance<bet)return;
 
  spinning=true;
  balance-=bet;
@@ -419,7 +449,7 @@ async function play(){
    "🎉 ПОБЕДА! Начислено "+
    result.win.toLocaleString("ru-RU")+" очков!";
  }else{
-  $("message").textContent="В этот раз без совпадений. Попробуй ещё!";
+  $("message").textContent="ничего не выпало";
  }
 
  spinning=false;
@@ -429,14 +459,109 @@ async function play(){
 
 $("playButton").onclick=play;
 
-$("superButton").onclick=()=>{
- if(balance<SUPER_GAME_REQUIRED)return;
+/* СУПЕРИГРА */
 
- $("superResult").textContent=
-  "Поздравляем! Ты открыл суперигру Failoria!";
- $("superButton").textContent="СУПЕРИГРА ОТКРЫТА";
- $("superButton").disabled=true;
+function stopSuperTimer(){
+ if(superTimerInterval){
+  clearInterval(superTimerInterval);
+  superTimerInterval=null;
+ }
+}
+
+function showSuperRound(){
+ $("superRound").textContent=
+  "РАУНД "+superRoundNumber+" ИЗ "+SUPER_ROUNDS;
+
+ $("superTimer").textContent=SUPER_TIME;
+ $("superFill").style.width="100%";
+ $("superAction").hidden=false;
+ $("superStart").hidden=true;
+
+ superDeadline=Date.now()+SUPER_TIME*1000;
+ stopSuperTimer();
+
+ superTimerInterval=setInterval(()=>{
+  const remaining=Math.max(0,superDeadline-Date.now());
+  const seconds=Math.ceil(remaining/1000);
+
+  $("superTimer").textContent=seconds;
+  $("superFill").style.width=
+   (remaining/(SUPER_TIME*1000)*100)+"%";
+
+  if(remaining<=0){
+   finishSuperGame(false);
+  }
+ },100);
+}
+
+async function startSuperGame(){
+ if(superActive||balance<SUPER_COST||!user)return;
+
+ const confirmed=confirm(
+  "Начать суперигру за 100 000 очков?"
+ );
+
+ if(!confirmed)return;
+
+ superActive=true;
+ balance-=SUPER_COST;
+ superRoundNumber=1;
+
+ $("superResult").textContent="";
+ $("superStart").disabled=true;
+ $("message").textContent="Суперигра началась!";
+
+ updateUI();
+ await saveGame();
+
+ $("superStart").disabled=false;
+ showSuperRound();
+}
+
+async function finishSuperGame(success){
+ stopSuperTimer();
+ superActive=false;
+
+ $("superAction").hidden=true;
+ $("superStart").hidden=false;
+
+ if(success){
+  $("superRound").textContent="ВСЕ 5 РАУНДОВ ПРОЙДЕНЫ!";
+  $("superTimer").textContent="🏆";
+  $("superFill").style.width="100%";
+  $("superResult").textContent=
+   "🎉 ПОБЕДА! Ты прошёл суперигру!";
+ }else{
+  $("superRound").textContent="ИГРА ЗАВЕРШЕНА";
+  $("superTimer").textContent="0";
+  $("superFill").style.width="0%";
+  $("superResult").textContent=
+   "Время вышло! Суперигра окончена.";
+ }
+
+ updateUI();
+}
+
+$("superStart").onclick=startSuperGame;
+
+$("superAction").onclick=()=>{
+ if(!superActive)return;
+
+ if(Date.now()>superDeadline){
+  finishSuperGame(false);
+  return;
+ }
+
+ if(superRoundNumber>=SUPER_ROUNDS){
+  finishSuperGame(true);
+  return;
+ }
+
+ superRoundNumber++;
+ showSuperRound();
 };
+
+/* БОНУС +100 */
 
 function updateBonusTimer(){
  if(!user)return;
@@ -454,11 +579,12 @@ function updateBonusTimer(){
   $("bonusTimer").textContent="Бонус уже доступен!";
  }
 
- $("bonusButton").disabled=balance!==0||remaining>0;
+ $("bonusButton").disabled=
+  balance!==0||remaining>0||superActive;
 }
 
 $("bonusButton").onclick=async()=>{
- if(!user||balance!==0)return;
+ if(!user||balance!==0||superActive)return;
  if(Date.now()-lastBonusAt<BONUS_INTERVAL)return;
 
  balance+=BONUS_AMOUNT;
