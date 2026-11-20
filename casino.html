@@ -61,6 +61,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .super-bar{height:9px;background:#38244d;border-radius:10px;overflow:hidden;margin:12px 0}
 .super-fill{height:100%;width:100%;background:#b48aff}
 .super-action{margin-top:12px}
+.super-total{text-align:center;color:#fff;font-weight:bold;margin:12px 0;font-size:18px}
 .bonus{text-align:center;border-color:#39ff59;background:linear-gradient(145deg,#102514,#091109)}
 .bonus h2{color:#39ff59;font-size:22px;margin:5px}
 .bonus p{color:#a9cbaa;font-size:13px;line-height:1.6}
@@ -79,6 +80,7 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
 <main>
 <h1 class="title">🎰 FAILORIA CASINO</h1>
+<p class="subtitle">Игровой автомат 5 × 3</p>
 
 <section class="account">
  <div class="account-title">АККАУНТ FAILORIA</div>
@@ -102,7 +104,7 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
  <section class="balance">
   <div class="balance-label">ТВОЙ БАЛАНС</div>
-  <div class="balance-value" id="balance">10000</div>
+  <div class="balance-value" id="balance">1000</div>
   <div class="balance-label">виртуальных очков</div>
 
   <div class="stats">
@@ -137,7 +139,6 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
     <button data-bet="1000">1000</button>
     <button data-bet="5000">5000</button>
     <button data-bet="10000">10000</button>
-    <button data-bet="10000">50000</button>
    </div>
   </section>
 
@@ -156,14 +157,16 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
  <section class="super" id="superSection" hidden>
   <h2>⭐ SUPER GAME ⭐</h2>
-  <p>Для запуска нужно 100 000 очков. При старте они будут списаны с баланса.</p>
+  <p>Вход стоит 100 000 очков. Каждый выигрыш в суперигре умножается на 5.</p>
 
   <div class="super-round" id="superRound">Готов к испытанию?</div>
   <div class="super-timer" id="superTimer">10</div>
   <div class="super-bar"><div class="super-fill" id="superFill"></div></div>
 
+  <div class="super-total" id="superTotal">Накоплено: 0</div>
+
   <button id="superStart">НАЧАТЬ СУПЕРИГРУ — 100 000</button>
-  <button id="superAction" class="super-action" hidden>НАЖАТЬ!</button>
+  <button id="superAction" class="super-action" hidden>🎰 КРУТИТЬ СУПЕРСЛОТ</button>
   <div class="super-result" id="superResult"></div>
  </section>
 
@@ -176,8 +179,8 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
  <section class="bonus">
   <h2>🎁 БОНУС +100</h2>
-  <p>ты можешь получить 100 бесплатных очков.</p>
-  <div class="timer" id="bonusTimer">Бонус доступен</div>
+  <p>Если баланс стал равен нулю, ты можешь получить 100 бесплатных очков.</p>
+  <div class="timer" id="bonusTimer">Бонус доступен при нулевом балансе</div>
   <button id="bonusButton" disabled>ПОЛУЧИТЬ 100 ОЧКОВ</button>
  </section>
 
@@ -212,6 +215,7 @@ const db=getFirestore(app);
 const SUPER_COST=100000;
 const SUPER_ROUNDS=5;
 const SUPER_TIME=10;
+const SUPER_MULTIPLIER=5;
 const BONUS_AMOUNT=100;
 const BONUS_INTERVAL=60000;
 
@@ -227,7 +231,7 @@ const symbols=[
 const $=id=>document.getElementById(id);
 
 let user=null;
-let balance=10000;
+let balance=1000;
 let bet=10;
 let totalSpins=0;
 let totalWon=0;
@@ -240,6 +244,8 @@ let superActive=false;
 let superRoundNumber=0;
 let superDeadline=0;
 let superTimerInterval=null;
+let superTotal=0;
+let superBusy=false;
 
 function getGameRef(){
  return doc(db,"gameProgress",user.uid,"games","casino");
@@ -262,7 +268,7 @@ function updateUI(){
 
  $("playButton").disabled=spinning||balance<bet||superActive;
  $("bonusButton").disabled=balance!==0||
-  Date.now()-lastBonusAt<BONUS_INTERVAL;
+  Date.now()-lastBonusAt<BONUS_INTERVAL||superActive;
 
  updateBonusTimer();
 }
@@ -308,7 +314,7 @@ async function loadGame(){
    bestWin=Number(data.bestWin??0);
    lastBonusAt=Number(data.lastBonusAt??0);
   }else{
-   balance=10000;
+   balance=1000;
    bet=10;
    totalSpins=0;
    totalWon=0;
@@ -317,7 +323,7 @@ async function loadGame(){
    await saveGame();
   }
 
-  if(![10,50,100,500,1000,5000,10000,20000,30000,40000,50000,100000].includes(bet))bet=10;
+  if(![10,50,100,500,1000,5000,10000].includes(bet))bet=10;
 
   updateUI();
   createGrid();
@@ -413,6 +419,20 @@ function calculateWin(){
  return {win,winningCells};
 }
 
+async function spinMachine(){
+ cells.forEach(cell=>cell.classList.remove("win"));
+ cells.forEach(cell=>cell.classList.add("spinning"));
+
+ await new Promise(resolve=>setTimeout(resolve,1000));
+
+ cells.forEach(cell=>{
+  cell.classList.remove("spinning");
+  cell.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+ });
+
+ return calculateWin();
+}
+
 async function play(){
  if(spinning||superActive||balance<bet)return;
 
@@ -424,17 +444,7 @@ async function play(){
  $("message").textContent="Крутим...";
  $("playButton").disabled=true;
 
- cells.forEach(cell=>cell.classList.remove("win","spinning"));
- cells.forEach(cell=>cell.classList.add("spinning"));
-
- await new Promise(resolve=>setTimeout(resolve,1000));
-
- cells.forEach(cell=>{
-  cell.classList.remove("spinning");
-  cell.textContent=symbols[Math.floor(Math.random()*symbols.length)];
- });
-
- const result=calculateWin();
+ const result=await spinMachine();
 
  if(result.win>0){
   balance+=result.win;
@@ -449,7 +459,7 @@ async function play(){
    "🎉 ПОБЕДА! Начислено "+
    result.win.toLocaleString("ru-RU")+" очков!";
  }else{
-  $("message").textContent="ничего не выпало";
+  $("message").textContent="В этот раз без совпадений. Попробуй ещё!";
  }
 
  spinning=false;
@@ -468,89 +478,93 @@ function stopSuperTimer(){
  }
 }
 
-function showSuperRound(){
- $("superRound").textContent=
-  "РАУНД "+superRoundNumber+" ИЗ "+SUPER_ROUNDS;
+function updateSuperTimer(){
+ if(!superActive)return;
 
- $("superTimer").textContent=SUPER_TIME;
- $("superFill").style.width="100%";
- $("superAction").hidden=false;
- $("superStart").hidden=true;
+ const remaining=Math.max(0,superDeadline-Date.now());
+ $("superTimer").textContent=Math.ceil(remaining/1000);
+ $("superFill").style.width=
+  (remaining/(SUPER_TIME*1000)*100)+"%";
 
+ if(remaining<=0){
+  finishSuperGame(false);
+ }
+}
+
+function startRoundTimer(){
  superDeadline=Date.now()+SUPER_TIME*1000;
  stopSuperTimer();
-
- superTimerInterval=setInterval(()=>{
-  const remaining=Math.max(0,superDeadline-Date.now());
-  const seconds=Math.ceil(remaining/1000);
-
-  $("superTimer").textContent=seconds;
-  $("superFill").style.width=
-   (remaining/(SUPER_TIME*1000)*100)+"%";
-
-  if(remaining<=0){
-   finishSuperGame(false);
-  }
- },100);
+ updateSuperTimer();
+ superTimerInterval=setInterval(updateSuperTimer,100);
 }
 
 async function startSuperGame(){
  if(superActive||balance<SUPER_COST||!user)return;
 
  const confirmed=confirm(
-  "Начать суперигру за 100 000 очков?"
+  "Начать суперигру за 100 000 очков? Очки не возвращаются при проигрыше."
  );
 
  if(!confirmed)return;
 
  superActive=true;
- balance-=SUPER_COST;
  superRoundNumber=1;
+ superTotal=0;
+ superBusy=false;
+
+ balance-=SUPER_COST;
 
  $("superResult").textContent="";
- $("superStart").disabled=true;
- $("message").textContent="Суперигра началась!";
+ $("superStart").hidden=true;
+ $("superAction").hidden=false;
+ $("superAction").disabled=false;
+ $("superRound").textContent="РАУНД 1 ИЗ 5";
+ $("superTotal").textContent="Накоплено: 0";
+ $("superAction").textContent="🎰 КРУТИТЬ СУПЕРСЛОТ";
 
  updateUI();
  await saveGame();
 
- $("superStart").disabled=false;
- showSuperRound();
+ startRoundTimer();
 }
 
-async function finishSuperGame(success){
- stopSuperTimer();
- superActive=false;
+async function superSpin(){
+ if(!superActive||superBusy)return;
 
- $("superAction").hidden=true;
- $("superStart").hidden=false;
-
- if(success){
-  $("superRound").textContent="ВСЕ 5 РАУНДОВ ПРОЙДЕНЫ!";
-  $("superTimer").textContent="🏆";
-  $("superFill").style.width="100%";
-  $("superResult").textContent=
-   "🎉 ПОБЕДА! Ты прошёл суперигру!";
- }else{
-  $("superRound").textContent="ИГРА ЗАВЕРШЕНА";
-  $("superTimer").textContent="0";
-  $("superFill").style.width="0%";
-  $("superResult").textContent=
-   "Время вышло! Суперигра окончена.";
- }
-
- updateUI();
-}
-
-$("superStart").onclick=startSuperGame;
-
-$("superAction").onclick=()=>{
- if(!superActive)return;
-
- if(Date.now()>superDeadline){
+ if(Date.now()>=superDeadline){
   finishSuperGame(false);
   return;
  }
+
+ superBusy=true;
+ stopSuperTimer();
+ $("superAction").disabled=true;
+ $("superRound").textContent=
+  "РАУНД "+superRoundNumber+" ИЗ 5 — ВРАЩЕНИЕ!";
+ $("superTimer").textContent="🎰";
+
+ const result=await spinMachine();
+
+ if(!superActive)return;
+
+ const multipliedWin=result.win*SUPER_MULTIPLIER;
+ superTotal+=multipliedWin;
+
+ if(result.win>0){
+  result.winningCells.forEach(index=>{
+   cells[index].classList.add("win");
+  });
+ }
+
+ $("superTotal").textContent=
+  "Накоплено: "+superTotal.toLocaleString("ru-RU");
+
+ $("superResult").textContent=result.win>0
+  ? "Выигрыш раунда: "+result.win.toLocaleString("ru-RU")+
+    " × 5 = "+multipliedWin.toLocaleString("ru-RU")
+  : "В этом раунде нет совпадений. Выигрыш: 0";
+
+ superBusy=false;
 
  if(superRoundNumber>=SUPER_ROUNDS){
   finishSuperGame(true);
@@ -558,8 +572,56 @@ $("superAction").onclick=()=>{
  }
 
  superRoundNumber++;
- showSuperRound();
-};
+ $("superRound").textContent=
+  "РАУНД "+superRoundNumber+" ИЗ 5";
+
+ $("superAction").disabled=false;
+ $("superAction").textContent="🎰 КРУТИТЬ РАУНД "+superRoundNumber;
+
+ startRoundTimer();
+}
+
+async function finishSuperGame(success){
+ if(!superActive)return;
+
+ stopSuperTimer();
+ superActive=false;
+ superBusy=false;
+
+ $("superAction").hidden=true;
+ $("superStart").hidden=false;
+ $("superStart").disabled=false;
+
+ if(success){
+  balance+=superTotal;
+  totalWon+=superTotal;
+  bestWin=Math.max(bestWin,superTotal);
+
+  $("superRound").textContent="🏆 ВСЕ 5 РАУНДОВ ПРОЙДЕНЫ!";
+  $("superTimer").textContent="🏆";
+  $("superFill").style.width="100%";
+
+  $("superResult").textContent=
+   "ПОБЕДА! На баланс начислено "+
+   superTotal.toLocaleString("ru-RU")+" очков!";
+ }else{
+  $("superRound").textContent="ИГРА ЗАВЕРШЕНА";
+  $("superTimer").textContent="0";
+  $("superFill").style.width="0%";
+
+  $("superResult").textContent=
+   "Время вышло! Накопленный выигрыш сгорел. Входные 100 000 очков не возвращаются.";
+ }
+
+ $("superTotal").textContent=
+  "Итог суперигры: "+superTotal.toLocaleString("ru-RU");
+
+ updateUI();
+ await saveGame();
+}
+
+$("superStart").onclick=startSuperGame;
+$("superAction").onclick=superSpin;
 
 /* БОНУС +100 */
 
@@ -599,4 +661,5 @@ setInterval(updateBonusTimer,1000);
 createGrid();
 </script>
 </body>
-</html>
+   </html>
+   
