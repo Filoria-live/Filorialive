@@ -149,7 +149,8 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
     <button data-bet="500">500</button>
     <button data-bet="1000">1000</button>
     <button data-bet="5000">5000</button>
-    <button data-bet="10000">10000</button>
+    <button data-bet="10000">100000</button>
+    <button data-bet="10000">1000000000</button>
    </div>
   </section>
 
@@ -203,7 +204,7 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 
  <section class="info">
   <div class="info-title">ПРАВИЛА</div>
-  Это игра на виртуальные очки. Реальные деньги не используются.
+  Это игра на виртуальные очки. Реальные деньги не используются. жопа
   <br>Совпадения проверяются по горизонтальным линиям и диагоналям.
   <br>Выигрыш начисляется автоматически на баланс.
  </section>
@@ -406,7 +407,7 @@ async function loadGame(){
    await saveGame();
   }
 
-  if(![10,50,100,500,1000,5000,10000].includes(bet)){
+  if(![10,50,100,500,1000,5000,10000,100000,10000000].includes(bet)){
    bet=10;
   }
 
@@ -645,7 +646,7 @@ async function play(){
   const result=await spinMachine();
 
   if(result.win>0){
-   luck=Math.max(0,luck-12);
+   luck=Math.max(0,luck-52);
 
    balance+=result.win;
    totalWon+=result.win;
