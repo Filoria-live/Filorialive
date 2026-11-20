@@ -677,7 +677,17 @@ async function play(){
    await saveGame();
   }
 }
+/* ПРИВЯЗКА КНОПКИ КРУТИТЬ */
 
+const spinButton = $("spinButton");
+
+if(spinButton){
+ spinButton.addEventListener("click", async()=>{
+  await play();
+ });
+}else{
+ console.error("Кнопка Крутить не найдена: spinButton");
+}
 /* СУПЕРИГРА */
 
 function stopSuperTimer(){
