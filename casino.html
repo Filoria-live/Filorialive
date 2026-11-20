@@ -9,109 +9,56 @@
 
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;padding:20px;background:#050805;color:#eaffea;
- font-family:Arial,sans-serif;min-height:100vh
-}
-header{
- max-width:650px;margin:0 auto 25px;
- display:flex;justify-content:space-between;align-items:center
-}
+body{margin:0;padding:18px;background:#050805;color:#eaffea;font-family:Arial,sans-serif}
+header{max-width:650px;margin:auto;display:flex;justify-content:space-between;align-items:center}
 .logo{color:#39ff59;font-weight:900;letter-spacing:2px}
 .back{color:#8ebd8e;text-decoration:none;font-size:13px}
 main{max-width:650px;margin:auto}
-.title{
- text-align:center;color:#39ff59;font-size:30px;
- margin:30px 0 8px;text-shadow:0 0 15px #39ff59
-}
+.title{text-align:center;color:#39ff59;font-size:30px;margin:30px 0 8px;text-shadow:0 0 15px #39ff59}
 .subtitle{text-align:center;color:#82a882;font-size:13px}
-.account,.balance,.machine,.info,.rewards,.bonus,.super{
- background:#0b150d;border:1px solid #286b35;
- border-radius:14px;padding:16px;margin:22px 0
-}
-.account-title,.info-title,.rewards-title{
- color:#39ff59;font-weight:bold;margin-bottom:10px
-}
+.account,.balance,.machine,.info,.rewards,.bonus,.super{background:#0b150d;border:1px solid #286b35;border-radius:14px;padding:16px;margin:20px 0}
+.account-title,.info-title,.rewards-title{color:#39ff59;font-weight:bold;margin-bottom:10px}
 .account-status{color:#91b994;font-size:12px;margin-bottom:10px}
-.account input{
- width:100%;padding:12px;margin:5px 0;
- border:1px solid #286b35;border-radius:9px;
- background:#071008;color:white
-}
+.account input{width:100%;padding:12px;margin:5px 0;border:1px solid #286b35;border-radius:9px;background:#071008;color:white}
 button{cursor:pointer}
-.account button{
- padding:12px 16px;margin-top:8px;border:0;
- border-radius:9px;background:#39ff59;color:#041006;font-weight:bold
-}
+.account button{padding:12px 16px;margin-top:8px;border:0;border-radius:9px;background:#39ff59;color:#041006;font-weight:bold}
 .account .logout{background:#263a29;color:#caffce}
 #authMessage{color:#9fc5a3;font-size:12px;margin-top:10px}
 .balance{text-align:center;background:#101b10}
 .balance-label{color:#82a882;font-size:12px}
-.balance-value{
- color:#39ff59;font-size:32px;font-weight:bold;margin:8px
-}
+.balance-value{color:#39ff59;font-size:34px;font-weight:bold;margin:8px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}
 .stat{background:#091109;border:1px solid #1c3921;border-radius:9px;padding:10px 4px}
 .stat-value{color:#39ff59;font-weight:bold;font-size:17px}
 .stat-label{font-size:10px;color:#82a882;margin-top:5px}
-.machine{
- background:linear-gradient(145deg,#17271a,#09100a);
- border:2px solid #286b35;padding:12px
-}
+.machine{background:linear-gradient(145deg,#17271a,#09100a);border:2px solid #286b35;padding:12px}
 .grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
-.cell{
- aspect-ratio:1;background:#071008;border:1px solid #25452b;
- border-radius:9px;display:flex;align-items:center;
- justify-content:center;font-size:clamp(23px,7vw,39px)
-}
+.cell{aspect-ratio:1;background:#071008;border:1px solid #25452b;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:clamp(23px,7vw,39px)}
 .cell.win{border-color:#39ff59;background:#193d20;box-shadow:0 0 15px #39ff5970}
-.cell.spinning{animation:shake .12s infinite alternate}
-@keyframes shake{
- from{transform:translateY(-2px)}
- to{transform:translateY(2px)}
-}
-.controls{display:grid;gap:12px;margin-top:20px}
-.bet-panel{
- background:#0b150d;border:1px solid #286b35;
- border-radius:14px;padding:16px;text-align:center
-}
+.controls{display:grid;gap:12px;margin-top:18px}
+.bet-panel{background:#0b150d;border:1px solid #286b35;border-radius:14px;padding:16px;text-align:center}
 .bet-label{color:#82a882;font-size:12px}
 .bet-value{font-size:26px;color:#39ff59;font-weight:bold;margin:12px}
 .bet-buttons{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.bet-buttons button{
- padding:12px 16px;background:#142516;color:#39ff59;
- border:1px solid #286b35;border-radius:9px;font-weight:bold
-}
-.bet-buttons button:disabled,.play:disabled{opacity:.4}
-.play{
- width:100%;padding:17px;border:0;border-radius:12px;
- background:#39ff59;color:#041006;font-size:17px;font-weight:900
-}
+.bet-buttons button{padding:11px 14px;background:#142516;color:#39ff59;border:1px solid #286b35;border-radius:9px;font-weight:bold}
+.bet-buttons button.selected{background:#39ff59;color:#041006}
+.bet-buttons button:disabled,.play:disabled,.bonus button:disabled,.super button:disabled{opacity:.4;cursor:not-allowed}
+.play{width:100%;padding:17px;border:0;border-radius:12px;background:#39ff59;color:#041006;font-size:17px;font-weight:900}
 .message{min-height:48px;text-align:center;margin-top:18px;color:#a9d5ae;font-weight:bold;line-height:1.5}
-.rewards{line-height:2;color:#a9cbaa}
+.rewards{line-height:1.8;color:#a9cbaa}
 .reward-row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #1c3921;padding:5px 0}
 .reward-row strong{color:#39ff59}
-.bonus{
- text-align:center;border-color:#39ff59;
- background:linear-gradient(145deg,#102514,#091109)
-}
-.bonus h2{color:#39ff59;font-size:22px;margin:5px}
-.bonus p{color:#a9cbaa;font-size:13px;line-height:1.6}
-.bonus button,.super button{
- width:100%;padding:15px;border:0;border-radius:10px;
- background:#39ff59;color:#041006;font-weight:900;font-size:15px
-}
-.bonus button:disabled,.super button:disabled{opacity:.4}
-.timer{font-size:22px;color:#39ff59;font-weight:bold;margin:12px}
-.super{
- border:1px solid #b48aff;
- background:linear-gradient(145deg,#211333,#0c0b15)
-}
+.info{color:#8ebd8e;font-size:12px;line-height:1.8}
+.super{border-color:#b48aff;background:linear-gradient(145deg,#211333,#0c0b15)}
 .super h2{color:#c49aff;text-align:center}
 .super p{color:#c1b1d5;font-size:13px;text-align:center;line-height:1.6}
-.super button{background:#b48aff;color:#160923}
+.super button{width:100%;padding:15px;border:0;border-radius:10px;background:#b48aff;color:#160923;font-weight:900}
 .super-result{text-align:center;color:#d7baff;margin-top:12px;font-weight:bold}
-.info{color:#8ebd8e;font-size:12px;line-height:1.8}
+.bonus{text-align:center;border-color:#39ff59;background:linear-gradient(145deg,#102514,#091109)}
+.bonus h2{color:#39ff59;font-size:22px;margin:5px}
+.bonus p{color:#a9cbaa;font-size:13px;line-height:1.6}
+.bonus button{width:100%;padding:15px;border:0;border-radius:10px;background:#39ff59;color:#041006;font-weight:900;font-size:15px}
+.timer{font-size:22px;color:#39ff59;font-weight:bold;margin:12px}
 footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 [hidden]{display:none!important}
 </style>
@@ -130,15 +77,18 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
 <section class="account">
  <div class="account-title">АККАУНТ FAILORIA</div>
  <div class="account-status" id="accountStatus">Проверяем авторизацию...</div>
+
  <div id="loginForm" hidden>
   <input id="email" type="email" placeholder="Почта Failoria ID">
   <input id="password" type="password" placeholder="Пароль">
   <button id="loginButton">ВОЙТИ</button>
  </div>
+
  <div id="userPanel" hidden>
   <div class="account-status" id="userEmail"></div>
   <button class="logout" id="logoutButton">ВЫЙТИ</button>
  </div>
+
  <div id="authMessage"></div>
 </section>
 
@@ -148,6 +98,7 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
   <div class="balance-label">ТВОЙ БАЛАНС</div>
   <div class="balance-value" id="balance">1000</div>
   <div class="balance-label">виртуальных очков</div>
+
   <div class="stats">
    <div class="stat">
     <div class="stat-value" id="totalSpins">0</div>
@@ -164,356 +115,375 @@ footer{text-align:center;color:#526b56;font-size:11px;margin:30px 0 10px}
   </div>
  </section>
 
- <section class="bonus">
-  <h2>🎁 БЕСПЛАТНЫЙ БОНУС</h2>
-  <p>Если баланс равен нулю, можно получить 100 виртуальных очков раз в минуту.</p>
-  <div class="timer" id="bonusTimer">01:00</div>
-  <button id="bonusButton" disabled>ПОЛУЧИТЬ +100</button>
-  <p id="bonusMessage">Бонус доступен при нулевом балансе.</p>
- </section>
-
  <section class="machine">
   <div class="grid" id="grid"></div>
  </section>
 
- <section class="controls">
-  <div class="bet-panel">
-   <div class="bet-label">ВЫБОР ИГРОВОГО УРОВНЯ</div>
-   <div class="bet-value" id="bet">10 очков</div>
-   <div class="bet-buttons">
-    <button id="minus">−</button>
-    <button id="plus">+</button>
-    <button id="max">МАКСИМУМ</button>
+ <div class="controls">
+  <section class="bet-panel">
+   <div class="bet-label">СТАВКА В ИГРОВЫХ ОЧКАХ</div>
+   <div class="bet-value" id="betValue">10</div>
+   <div class="bet-buttons" id="betButtons">
+    <button data-bet="10">10</button>
+    <button data-bet="50">50</button>
+    <button data-bet="100">100</button>
+    <button data-bet="500">500</button>
+    <button data-bet="1000">1000</button>
+    <button data-bet="5000">5000</button>
+    <button data-bet="10000">10000</button>
    </div>
-   <div class="bet-label" id="stepInfo">Шаг: 10</div>
-  </div>
-  <button class="play" id="play">ИГРАТЬ</button>
+  </section>
+
+  <button class="play" id="playButton">КРУТИТЬ</button>
+ </div>
+
+ <div class="message" id="message">Удачи!</div>
+
+ <section class="rewards">
+  <div class="rewards-title">ТАБЛИЦА НАГРАД</div>
+  <div class="reward-row"><span>7️⃣ 7️⃣ 7️⃣ — три семёрки</span><strong>×100</strong></div>
+  <div class="reward-row"><span>💎 💎 💎 — три алмаза</span><strong>×30</strong></div>
+  <div class="reward-row"><span>⭐ ⭐ ⭐ — три звезды</span><strong>×15</strong></div>
+  <div class="reward-row"><span>Три одинаковых символа</span><strong>×5</strong></div>
  </section>
 
- <div class="message" id="message">Удачи в игре!</div>
+ <section class="super" id="superSection" hidden>
+  <h2>⭐ SUPER GAME ⭐</h2>
+  <p>Ты накопил 110 000 очков! Суперигра открыта.</p>
+  <button id="superButton">ОТКРЫТЬ СУПЕРИГРУ</button>
+  <div class="super-result" id="superResult"></div>
+ </section>
 
- <section class="super">
-  <h2>💜 SUPER GAME</h2>
-  <p>Особое испытание открывается при достижении 100 000 виртуальных очков.</p>
-  <p id="superStatus">Проверяем доступ...</p>
-  <button id="superButton" disabled>ОТКРЫТЬ SUPER GAME</button>
-  <div id="superResult" class="super-result"></div>
+ <section class="info">
+  <div class="info-title">ПРАВИЛА</div>
+  Это игра на виртуальные очки. Реальные деньги не используются.
+  <br>Совпадения проверяются по горизонтальным линиям и диагоналям.
+  <br>Выигрыш начисляется автоматически на баланс.
+ </section>
+
+ <section class="bonus">
+  <h2>🎁 БОНУС +100</h2>
+  <p>Если баланс стал равен нулю, ты можешь получить 100 бесплатных очков.</p>
+  <div class="timer" id="bonusTimer">Бонус доступен при нулевом балансе</div>
+  <button id="bonusButton" disabled>ПОЛУЧИТЬ 100 ОЧКОВ</button>
  </section>
 
 </section>
 
-<section class="rewards">
- <div class="rewards-title">🏆 ТАБЛИЦА НАГРАД</div>
- <div class="reward-row"><span>7️⃣ Три семёрки</span><strong>1000 очков</strong></div>
- <div class="reward-row"><span>💎 Три алмаза</span><strong>300 очков</strong></div>
- <div class="reward-row"><span>⭐ Три звезды</span><strong>150 очков</strong></div>
- <div class="reward-row"><span>🍒 🍋 🔔 Три одинаковых</span><strong>50 очков</strong></div>
-</section>
-
-<section class="info">
- <div class="info-title">ПРАВИЛА</div>
- • Игровое поле 5 × 3.
- <br>• Совпадения учитываются по горизонтали и диагонали.
- <br>• Награды начисляются за совпадения.
- <br>• Все очки виртуальные.
-</section>
+<footer>FAILORIA GAMES © 2026</footer>
 </main>
-
-<footer>FAILORIA CASINO © 2026</footer>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
- getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut
+ getAuth,
+ signInWithEmailAndPassword,
+ onAuthStateChanged,
+ signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 import {
- getFirestore,doc,getDoc,setDoc,serverTimestamp
+ getFirestore,
+ doc,
+ getDoc,
+ setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig={
+const firebaseConfig = {
  apiKey:"AIzaSyBkvQ49TJLLTAzLdRXzFMLh_0za8-07cRY",
  authDomain:"filoria-8cf9f.firebaseapp.com",
  projectId:"filoria-8cf9f",
  storageBucket:"filoria-8cf9f.firebasestorage.app",
  messagingSenderId:"974748954017",
  appId:"1:974748954017:web:626fe05cf5a7df5485afe0",
- measurementId:"G-7N8D3GMNZM"
+ measurementId:"G-8N7D3GMNZM"
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-const symbols=["🍒","💎","7️⃣","🍋","⭐","🔔"];
-const MAX_LEVEL=10000;
-const BONUS_AMOUNT=100;
-const BONUS_INTERVAL=60000;
-const SUPER_REQUIRED=100000;
+const SUPER_GAME_REQUIRED = 110000;
+const BONUS_AMOUNT = 100;
+const BONUS_INTERVAL = 60000;
 
-let balance=1000,bet=10,spinning=false,currentUser=null;
-let totalSpins=0,totalWon=0,bestWin=0;
-let progressRef=null,lastBonusAt=0,bonusBusy=false;
-let cells=[],bonusInterval=null;
+const $ = id => document.getElementById(id);
 
-const $=id=>document.getElementById(id);
+let user = null;
+let balance = 1000;
+let bet = 10;
+let totalSpins = 0;
+let totalWon = 0;
+let bestWin = 0;
+let lastBonusAt = 0;
+let spinning = false;
+let bonusInterval = null;
 
-for(let i=0;i<15;i++){
- const cell=document.createElement("div");
- cell.className="cell";
- cell.textContent="❔";
- $("grid").appendChild(cell);
- cells.push(cell);
+const symbols = ["🍒","💎","7️⃣","🍋","⭐","🔔"];
+
+let cells = [];
+
+function getGameRef(){
+ return doc(db,"gameProgress",user.uid,"games","casino");
 }
 
-function step(){
- if(bet<100)return 10;
- if(bet<1000)return 100;
- return 500;
+function updateUI(){
+ $("balance").textContent = balance.toLocaleString("ru-RU");
+ $("betValue").textContent = bet.toLocaleString("ru-RU");
+ $("totalSpins").textContent = totalSpins.toLocaleString("ru-RU");
+ $("totalWon").textContent = totalWon.toLocaleString("ru-RU");
+ $("bestWin").textContent = bestWin.toLocaleString("ru-RU");
+
+ $("superSection").hidden = balance < SUPER_GAME_REQUIRED;
+ $("bonusButton").disabled = balance !== 0 ||
+  Date.now() - lastBonusAt < BONUS_INTERVAL;
+
+ document.querySelectorAll("[data-bet]").forEach(button=>{
+  const value = Number(button.dataset.bet);
+  button.classList.toggle("selected",value===bet);
+  button.disabled = value > balance || spinning;
+ });
+
+ $("playButton").disabled = spinning || balance < bet;
+ updateBonusTimer();
 }
 
-function update(){
- $("balance").textContent=balance.toLocaleString("ru-RU");
- $("bet").textContent=bet.toLocaleString("ru-RU")+" очков";
- $("totalSpins").textContent=totalSpins.toLocaleString("ru-RU");
- $("totalWon").textContent=totalWon.toLocaleString("ru-RU");
- $("bestWin").textContent=bestWin.toLocaleString("ru-RU");
+function createGrid(){
+ const grid = $("grid");
+ grid.innerHTML = "";
+ cells = [];
 
- $("stepInfo").textContent="Шаг: "+step().toLocaleString("ru-RU");
- $("minus").disabled=spinning||bet<=10;
- $("plus").disabled=spinning||bet>=MAX_LEVEL;
- $("max").disabled=spinning||bet>=MAX_LEVEL;
- $("play").disabled=spinning||balance<bet||!currentUser;
-
- const unlocked=balance>=SUPER_REQUIRED;
- $("superButton").disabled=!unlocked||spinning;
- $("superStatus").textContent=unlocked?
-  "SUPER GAME ОТКРЫТА!":
-  "Нужно набрать ещё "+Math.max(0,SUPER_REQUIRED-balance).toLocaleString("ru-RU")+" очков.";
- updateBonus();
+ for(let i=0;i<15;i++){
+  const cell = document.createElement("div");
+  cell.className = "cell";
+  cell.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+  grid.appendChild(cell);
+  cells.push(cell);
+ }
 }
 
-async function saveProgress(){
- if(!progressRef)throw new Error("Нет ссылки на профиль");
- await setDoc(progressRef,{
-  balance,bet,totalSpins,totalWon,bestWin,lastBonusAt,
-  updatedAt:serverTimestamp()
- },{merge:true});
-}
+async function saveGame(){
+ if(!user)return;
 
-async function loadProgress(user){
- progressRef=doc(db,"gameProgress",user.uid,"games","casino");
- $("message").textContent="Загружаем прогресс...";
  try{
-  const snapshot=await getDoc(progressRef);
+  await setDoc(getGameRef(),{
+   balance,
+   bet,
+   totalSpins,
+   totalWon,
+   bestWin,
+   lastBonusAt,
+   updatedAt:Date.now()
+  });
+ }catch(error){
+  console.error(error);
+  $("message").textContent = "Не удалось сохранить прогресс.";
+ }
+}
+
+async function loadGame(){
+ try{
+  const snapshot = await getDoc(getGameRef());
+
   if(snapshot.exists()){
-   const d=snapshot.data();
-   balance=Number.isFinite(d.balance)?Math.max(0,d.balance):1000;
-   totalSpins=Number.isFinite(d.totalSpins)?d.totalSpins:0;
-   totalWon=Number.isFinite(d.totalWon)?d.totalWon:0;
-   bestWin=Number.isFinite(d.bestWin)?d.bestWin:0;
-   bet=Number.isFinite(d.bet)?Math.min(MAX_LEVEL,Math.max(10,d.bet)):10;
-   lastBonusAt=Number.isFinite(d.lastBonusAt)?d.lastBonusAt:0;
+   const data = snapshot.data();
+   balance = Number(data.balance ?? 1000);
+   bet = Number(data.bet ?? 10);
+   totalSpins = Number(data.totalSpins ?? 0);
+   totalWon = Number(data.totalWon ?? 0);
+   bestWin = Number(data.bestWin ?? 0);
+   lastBonusAt = Number(data.lastBonusAt ?? 0);
   }else{
-   balance=1000;bet=10;
-   totalSpins=0;totalWon=0;bestWin=0;lastBonusAt=0;
-   await saveProgress();
+   balance = 1000;
+   bet = 10;
+   totalSpins = 0;
+   totalWon = 0;
+   bestWin = 0;
+   lastBonusAt = 0;
+   await saveGame();
   }
-  update();
-  $("message").textContent="Прогресс загружен!";
- }catch(e){
-  console.error(e);
-  $("message").textContent="Ошибка загрузки. Проверь Firestore.";
+
+  if(![10,50,100,500,1000,5000,10000].includes(bet))bet=10;
+  updateUI();
+  createGrid();
+ }catch(error){
+  console.error(error);
+  $("message").textContent = "Ошибка загрузки прогресса.";
  }
 }
 
-function updateBonus(){
- const remaining=Math.max(0,BONUS_INTERVAL-(Date.now()-lastBonusAt));
- const ready=remaining===0&&balance===0&&!bonusBusy;
- const seconds=Math.ceil(remaining/1000);
- $("bonusTimer").textContent=
-  String(Math.floor(seconds/60)).padStart(2,"0")+":"+
-  String(seconds%60).padStart(2,"0");
- $("bonusButton").disabled=!ready||!currentUser;
- $("bonusMessage").textContent=balance>0?
-  "Бонус станет доступен при нулевом балансе.":
-  ready?"Бонус готов! Получи 100 очков.":"Ожидай следующего бонуса.";
-}
+$("loginButton").onclick = async()=>{
+ const email = $("email").value.trim();
+ const password = $("password").value;
 
-async function claimBonus(){
- if(bonusBusy||!currentUser||balance!==0)return;
- if(Date.now()-lastBonusAt<BONUS_INTERVAL)return;
+ if(!email || !password){
+  $("authMessage").textContent = "Заполни почту и пароль.";
+  return;
+ }
 
- bonusBusy=true;
- $("bonusButton").disabled=true;
-
- const oldBalance=balance;
- const oldTime=lastBonusAt;
- balance=BONUS_AMOUNT;
- lastBonusAt=Date.now();
- update();
+ $("loginButton").disabled = true;
 
  try{
-  await saveProgress();
-  $("bonusMessage").textContent="Получено +100 виртуальных очков!";
- }catch(e){
-  balance=oldBalance;
-  lastBonusAt=oldTime;
-  $("bonusMessage").textContent="Ошибка сохранения бонуса.";
+  await signInWithEmailAndPassword(auth,email,password);
+  $("authMessage").textContent = "";
+ }catch(error){
+  $("authMessage").textContent = "Неверная почта или пароль.";
+ }finally{
+  $("loginButton").disabled = false;
  }
- bonusBusy=false;
- update();
-}
-
-$("bonusButton").onclick=claimBonus;
-
-$("minus").onclick=()=>{
- if(spinning)return;
- bet=Math.max(10,bet-step());
- update();
-};
-$("plus").onclick=()=>{
- if(spinning)return;
- bet=Math.min(MAX_LEVEL,bet+step());
- update();
-};
-$("max").onclick=()=>{
- if(spinning)return;
- bet=MAX_LEVEL;
- update();
 };
 
-function payout(symbol){
- if(symbol==="7️⃣")return 1000;
- if(symbol==="💎")return 300;
- if(symbol==="⭐")return 150;
- return 50;
-}
+$("logoutButton").onclick = ()=>signOut(auth);
 
-function getWinningLines(result){
- const lines=[];
- for(let row=0;row<3;row++){
-  const start=row*5;
-  for(let col=0;col<=2;col++)
-   lines.push([start+col,start+col+1,start+col+2]);
- }
- for(let row=0;row<=1;row++){
-  for(let col=0;col<=2;col++){
-   const start=row*5+col;
-   lines.push([start,start+6,start+12]);
-   lines.push([start+2,start+6,start+10]);
-  }
- }
- return lines.filter(line=>{
-  const [a,b,c]=line;
-  return result[a]===result[b]&&result[b]===result[c];
- });
-}
+onAuthStateChanged(auth,async currentUser=>{
+ user = currentUser;
 
-function spin(){
- const result=Array.from({length:15},()=>
-  symbols[Math.floor(Math.random()*symbols.length)]
- );
- result.forEach((s,i)=>{
-  cells[i].textContent=s;
-  cells[i].classList.remove("win");
-  cells[i].classList.add("spinning");
- });
- return result;
-}
-
-$("play").onclick=async()=>{
- if(spinning||!currentUser||balance<bet)return;
- spinning=true;
- balance-=bet;
- update();
- $("message").textContent="Барабаны вращаются...";
- const result=spin();
- await new Promise(resolve=>setTimeout(resolve,1100));
- cells.forEach(c=>c.classList.remove("spinning"));
-
- const lines=getWinningLines(result);
- const winningCells=new Set();
- let prize=0;
- lines.forEach(line=>{
-  prize+=payout(result[line[0]]);
-  line.forEach(i=>winningCells.add(i));
- });
- winningCells.forEach(i=>cells[i].classList.add("win"));
-
- balance+=prize;
- totalSpins++;
- totalWon+=prize;
- bestWin=Math.max(bestWin,prize);
-
- $("message").textContent=prize>0?
-  "Начислено "+prize.toLocaleString("ru-RU")+" виртуальных очков!":
-  "Новых очков в этот раз нет.";
-
- try{
-  await saveProgress();
-  $("message").textContent+=" Прогресс сохранён.";
- }catch(e){
-  console.error(e);
-  $("message").textContent+=" Ошибка сохранения!";
- }
- spinning=false;
- update();
-};
-
-$("superButton").onclick=()=>{
- if(balance<SUPER_REQUIRED||spinning)return;
- $("superResult").textContent="💜 SUPER GAME! Испытание открыто. Поздравляем!";
-};
-
-onAuthStateChanged(auth,async user=>{
- currentUser=user;
- if(bonusInterval){
-  clearInterval(bonusInterval);
-  bonusInterval=null;
- }
  if(user){
-  $("accountStatus").textContent="Ты вошёл в Failoria.";
-  $("loginForm").hidden=true;
-  $("userPanel").hidden=false;
-  $("userEmail").textContent=user.email||"Аккаунт авторизован";
-  $("gameArea").hidden=false;
-  $("play").disabled=true;
-  await loadProgress(user);
-  bonusInterval=setInterval(updateBonus,1000);
+  $("accountStatus").textContent = "Ты вошёл в Failoria ID";
+  $("loginForm").hidden = true;
+  $("userPanel").hidden = false;
+  $("userEmail").textContent = user.email;
+  $("gameArea").hidden = false;
+
+  await loadGame();
  }else{
-  $("accountStatus").textContent="Войди через Failoria ID.";
-  $("loginForm").hidden=false;
-  $("userPanel").hidden=true;
-  $("gameArea").hidden=true;
-  progressRef=null;
+  $("accountStatus").textContent = "Войди в свой аккаунт";
+  $("loginForm").hidden = false;
+  $("userPanel").hidden = true;
+  $("gameArea").hidden = true;
  }
 });
 
-$("loginButton").onclick=async()=>{
- const email=$("email").value.trim();
- const password=$("password").value;
- if(!email||!password){
-  $("authMessage").textContent="Заполни почту и пароль.";
-  return;
+$("betButtons").addEventListener("click",event=>{
+ const button = event.target.closest("[data-bet]");
+ if(!button || spinning)return;
+
+ const value = Number(button.dataset.bet);
+ if(value > balance)return;
+
+ bet = value;
+ updateUI();
+ saveGame();
+});
+
+function getWinningLines(){
+ return [
+  [0,1,2,3,4],
+  [5,6,7,8,9],
+  [10,11,12,13,14],
+  [0,6,12],
+  [4,8,12]
+ ];
+}
+
+function calculateWin(){
+ let win = 0;
+ const winningCells = new Set();
+
+ for(const line of getWinningLines()){
+  const first = cells[line[0]].textContent;
+
+  if(line.every(index=>cells[index].textContent===first)){
+   let multiplier = 5;
+
+   if(first==="7️⃣")multiplier=100;
+   else if(first==="💎")multiplier=30;
+   else if(first==="⭐")multiplier=15;
+
+   win += bet * multiplier;
+   line.forEach(index=>winningCells.add(index));
+  }
  }
- $("loginButton").disabled=true;
- try{
-  await signInWithEmailAndPassword(auth,email,password);
-  $("authMessage").textContent="Вход выполнен!";
- }catch(e){
-  $("authMessage").textContent=e.code==="auth/invalid-credential"?
-   "Неверная почта или пароль.":e.message;
- }finally{
-  $("loginButton").disabled=false;
+
+ return {win,winningCells};
+}
+
+async function play(){
+ if(spinning || balance < bet)return;
+
+ spinning = true;
+ balance -= bet;
+ totalSpins++;
+ updateUI();
+
+ $("message").textContent = "Крутим...";
+ $("playButton").disabled = true;
+
+ cells.forEach(cell=>cell.classList.remove("win","spinning"));
+ cells.forEach(cell=>cell.classList.add("spinning"));
+
+ await new Promise(resolve=>setTimeout(resolve,1000));
+
+ cells.forEach(cell=>{
+  cell.classList.remove("spinning");
+  cell.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+ });
+
+ const result = calculateWin();
+
+ if(result.win > 0){
+  balance += result.win;
+  totalWon += result.win;
+  bestWin = Math.max(bestWin,result.win);
+
+  result.winningCells.forEach(index=>{
+   cells[index].classList.add("win");
+  });
+
+  $("message").textContent =
+   "🎉 ПОБЕДА! Начислено " + result.win.toLocaleString("ru-RU") + " очков!";
+ }else{
+  $("message").textContent = "В этот раз без совпадений. Попробуй ещё!";
  }
+
+ spinning = false;
+ updateUI();
+ await saveGame();
+}
+
+$("playButton").onclick = play;
+
+$("superButton").onclick = ()=>{
+ if(balance < SUPER_GAME_REQUIRED)return;
+
+ $("superResult").textContent =
+  "Поздравляем! Ты открыл суперигру Failoria!";
+ $("superButton").textContent = "СУПЕРИГРА ОТКРЫТА";
+ $("superButton").disabled = true;
 };
 
-$("logoutButton").onclick=async()=>{
- try{await signOut(auth)}
- catch(e){$("authMessage").textContent=e.message}
+function updateBonusTimer(){
+ if(!user)return;
+
+ const remaining = Math.max(0,BONUS_INTERVAL-(Date.now()-lastBonusAt));
+
+ if(balance !== 0){
+  $("bonusTimer").textContent = "Бонус доступен при нулевом балансе";
+ }else if(remaining > 0){
+  $("bonusTimer").textContent =
+   "Следующий бонус через " + Math.ceil(remaining/1000) + " сек.";
+ }else{
+  $("bonusTimer").textContent = "Бонус уже доступен!";
+ }
+
+ $("bonusButton").disabled = balance !== 0 || remaining > 0;
+}
+
+$("bonusButton").onclick = async()=>{
+ if(!user || balance !== 0)return;
+ if(Date.now()-lastBonusAt < BONUS_INTERVAL)return;
+
+ balance += BONUS_AMOUNT;
+ lastBonusAt = Date.now();
+
+ $("message").textContent = "🎁 Получено 100 бесплатных очков!";
+ updateUI();
+ await saveGame();
 };
 
-update();
+bonusInterval = setInterval(updateBonusTimer,1000);
+
+createGrid();
 </script>
 </body>
 </html>
