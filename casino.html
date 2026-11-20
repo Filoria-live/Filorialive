@@ -679,15 +679,7 @@ async function play(){
 }
 /* ПРИВЯЗКА КНОПКИ КРУТИТЬ */
 
-const spinButton = $("spinButton");
-
-if(spinButton){
- spinButton.addEventListener("click", async()=>{
-  await play();
- });
-}else{
- console.error("Кнопка Крутить не найдена: spinButton");
-}
+$("playButton").addEventListener("click",play);
 /* СУПЕРИГРА */
 
 function stopSuperTimer(){
